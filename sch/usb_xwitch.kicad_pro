@@ -235,9 +235,7 @@
     }
   },
   "libraries": {
-    "pinned_footprint_libs": [
-      "USB3_A_AdamTech_USB-A3-S-RA"
-    ],
+    "pinned_footprint_libs": [],
     "pinned_symbol_libs": []
   },
   "meta": {
