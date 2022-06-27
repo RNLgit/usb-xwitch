@@ -119,7 +119,7 @@
   (net 23 "Net-(J4-Pad9)")
   (net 24 "/RL3")
   (net 25 "/VBUS2")
-  (net 26 "Net-(K3-Pad21)")
+  (net 26 "Net-(J6-Pad1)")
   (net 27 "Net-(J6-Pad2)")
   (net 28 "Net-(J6-Pad3)")
   (net 29 "Net-(J6-Pad5)")
@@ -127,7 +127,7 @@
   (net 31 "Net-(J6-Pad8)")
   (net 32 "Net-(J6-Pad9)")
   (net 33 "/VBUS3")
-  (net 34 "Net-(K3-Pad12)")
+  (net 34 "Net-(J7-Pad10)")
   (net 35 "/REL-C")
   (net 36 "+5V")
   (net 37 "/RL1")
@@ -378,10 +378,10 @@
       (net 61 "Net-(J5-Pad10)") (pinfunction "SHIELD") (pintype "passive") (tstamp 4b9f3476-69d5-4154-8b6c-a2edfc16fa73))
     (pad "10" thru_hole circle (at 10.1 2 180) (size 3.5 3.5) (drill 2.3) (layers *.Cu *.Mask)
       (net 61 "Net-(J5-Pad10)") (pinfunction "SHIELD") (pintype "passive") (tstamp 562eaae7-9300-46a8-accb-2720aa052afc))
-    (model "${KICAD6_3DMODEL_DIR}/Connector_USB.3dshapes/USB3_A_Molex_48393-001.wrl"
-      (offset (xyz 0 0 0))
+    (model "${USB_XWITCH}/lib/footprint/3D/USB3_A_AdamTech_USB-A3-S-RA.step"
+      (offset (xyz 3.5 -3.5 4))
       (scale (xyz 1 1 1))
-      (rotate (xyz 0 0 0))
+      (rotate (xyz 0 -180 0))
     )
   )
 
@@ -470,7 +470,7 @@
     (property "Sheetname" "")
     (path "/2e43c232-d8be-4740-a0f7-6718ac217f9f")
     (attr smd)
-    (fp_text reference "D2" (at -5.5 2 180) (layer "F.SilkS")
+    (fp_text reference "D2" (at 0 -3 -90) (layer "F.SilkS")
       (effects (font (size 1 1) (thickness 0.15)))
       (tstamp a5e30f36-371c-4a18-9c07-926fb861fe76)
     )
@@ -584,7 +584,7 @@
 
   (footprint "Package_TO_SOT_SMD:SOT-23" (layer "F.Cu")
     (tedit 5FA16958) (tstamp 2a4fa60b-242a-46cd-b993-50231641045d)
-    (at 129.235 25.215)
+    (at 161.5 106 180)
     (descr "SOT, 3 Pin (https://www.jedec.org/system/files/docs/to-236h.pdf variant AB), generated with kicad-footprint-generator ipc_gullwing_generator.py")
     (tags "SOT TO_SOT_SMD")
     (property "Sheetfile" "usb_xwitch.kicad_sch")
@@ -616,11 +616,11 @@
     (fp_line (start -0.65 1.45) (end -0.65 -1.125) (layer "F.Fab") (width 0.1) (tstamp 6bf5b3ed-f390-476a-b6e7-7ffef3e1b589))
     (fp_line (start -0.65 -1.125) (end -0.325 -1.45) (layer "F.Fab") (width 0.1) (tstamp 7a6214a3-dab5-438f-b302-f8359aeca7c0))
     (fp_line (start 0.65 -1.45) (end 0.65 1.45) (layer "F.Fab") (width 0.1) (tstamp f1a1bee2-b923-440b-afe1-25c56dc0de35))
-    (pad "1" smd roundrect (at -0.9375 -0.95) (size 1.475 0.6) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25)
+    (pad "1" smd roundrect (at -0.9375 -0.95 180) (size 1.475 0.6) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25)
       (net 71 "/REL-B") (pinfunction "G") (pintype "input") (tstamp 138e3cde-c942-4a84-a658-f6c26f27a7e7))
-    (pad "2" smd roundrect (at -0.9375 0.95) (size 1.475 0.6) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25)
+    (pad "2" smd roundrect (at -0.9375 0.95 180) (size 1.475 0.6) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25)
       (net 17 "GND") (pinfunction "S") (pintype "passive") (tstamp ffe596de-c111-49fe-9d23-6de4525551a6))
-    (pad "3" smd roundrect (at 0.9375 0) (size 1.475 0.6) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25)
+    (pad "3" smd roundrect (at 0.9375 0 180) (size 1.475 0.6) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25)
       (net 38 "/RL2") (pinfunction "D") (pintype "passive") (tstamp 313ad6b0-f2d5-4ed5-a2e0-9e0253ef42d3))
     (model "${KICAD6_3DMODEL_DIR}/Package_TO_SOT_SMD.3dshapes/SOT-23.wrl"
       (offset (xyz 0 0 0))
@@ -860,7 +860,7 @@
     (property "Sheetname" "")
     (path "/2b40e13d-0496-490f-9645-d131d8a9c7a3")
     (attr through_hole)
-    (fp_text reference "J8" (at -1.27 -2.77 90) (layer "F.SilkS")
+    (fp_text reference "J8" (at -1.29 12.55 90) (layer "F.SilkS")
       (effects (font (size 1 1) (thickness 0.15)))
       (tstamp 9d1060da-9149-4f50-9c98-88b0ab8b88a5)
     )
@@ -909,8 +909,8 @@
       (net 17 "GND") (pinfunction "Pin_9") (pintype "passive") (tstamp e5820c64-97ab-48e6-8408-08575f7bce40))
     (pad "10" thru_hole oval (at -2.54 10.16 90) (size 1.7 1.7) (drill 1) (layers *.Cu *.Mask)
       (net 63 "/UART_PI_RX") (pinfunction "Pin_10") (pintype "passive") (tstamp 1608cb96-0001-4b59-aa53-9aa134f50853))
-    (model "${KICAD6_3DMODEL_DIR}/Connector_PinSocket_2.54mm.3dshapes/PinSocket_2x05_P2.54mm_Vertical.wrl"
-      (offset (xyz 0 0 0))
+    (model "${KICAD6_3DMODEL_DIR}/Connector_PinHeader_2.54mm.3dshapes/PinHeader_2x05_P2.54mm_Vertical.step"
+      (offset (xyz -2.5 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
     )
@@ -1333,7 +1333,7 @@
       (net 93 "unconnected-(U1-Pad42)") (pinfunction "GND") (pintype "power_in+no_connect") (tstamp b91acdde-0970-48ca-898e-989be4623287))
     (pad "43" smd rect (at 2.54 23.9 90) (size 3.5 1.7) (drill (offset -0.9 0)) (layers "F.Cu" "F.Mask")
       (net 94 "unconnected-(U1-Pad43)") (pinfunction "SWDIO") (pintype "bidirectional+no_connect") (tstamp e8d0525a-4a73-4416-ab9f-d9b6b5f6a8d2))
-    (model "C:/Users/lirun/PythonProjects/usb-xwitch/lib/footprint/Pico.wrl"
+    (model "${USB_XWITCH}/lib/footprint/3D/RPi_Pico_SMD.wrl"
       (offset (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
@@ -1444,10 +1444,10 @@
       (net 51 "Net-(J2-Pad10)") (pinfunction "SHIELD") (pintype "passive") (tstamp ee0fca46-032d-4c57-bb9a-9718019dc7d0))
     (pad "10" thru_hole circle (at -3.1 2) (size 3.5 3.5) (drill 2.3) (layers *.Cu *.Mask)
       (net 51 "Net-(J2-Pad10)") (pinfunction "SHIELD") (pintype "passive") (tstamp ee40c1f8-4a80-4199-893f-7ab61a700b86))
-    (model "${KICAD6_3DMODEL_DIR}/Connector_USB.3dshapes/USB3_A_Molex_48393-001.wrl"
-      (offset (xyz 0 0 0))
+    (model "${USB_XWITCH}/lib/footprint/3D/USB3_A_AdamTech_USB-A3-S-RA.step"
+      (offset (xyz 3.5 -3.5 4))
       (scale (xyz 1 1 1))
-      (rotate (xyz 0 0 0))
+      (rotate (xyz 0 180 0))
     )
   )
 
@@ -1866,7 +1866,7 @@
 
   (footprint "Package_TO_SOT_SMD:SOT-23" (layer "F.Cu")
     (tedit 5FA16958) (tstamp 841e83f9-4e4f-401e-9656-1cd979806909)
-    (at 100.605 55.465)
+    (at 161.5 120.5 180)
     (descr "SOT, 3 Pin (https://www.jedec.org/system/files/docs/to-236h.pdf variant AB), generated with kicad-footprint-generator ipc_gullwing_generator.py")
     (tags "SOT TO_SOT_SMD")
     (property "Sheetfile" "usb_xwitch.kicad_sch")
@@ -1898,11 +1898,11 @@
     (fp_line (start -0.325 -1.45) (end 0.65 -1.45) (layer "F.Fab") (width 0.1) (tstamp c0eece9b-2dbc-4d66-9d05-2ac700ca2016))
     (fp_line (start -0.65 1.45) (end -0.65 -1.125) (layer "F.Fab") (width 0.1) (tstamp df06e190-7f92-4bef-8dc7-212b2b7b1ddf))
     (fp_line (start -0.65 -1.125) (end -0.325 -1.45) (layer "F.Fab") (width 0.1) (tstamp e521f104-d879-4e29-9126-7047e399741e))
-    (pad "1" smd roundrect (at -0.9375 -0.95) (size 1.475 0.6) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25)
+    (pad "1" smd roundrect (at -0.9375 -0.95 180) (size 1.475 0.6) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25)
       (net 70 "/REL-A") (pinfunction "G") (pintype "input") (tstamp 366cea3e-9961-452f-8663-274e58ca3edb))
-    (pad "2" smd roundrect (at -0.9375 0.95) (size 1.475 0.6) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25)
+    (pad "2" smd roundrect (at -0.9375 0.95 180) (size 1.475 0.6) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25)
       (net 17 "GND") (pinfunction "S") (pintype "passive") (tstamp e902cb6a-14be-43d3-a995-9ef4bfa26159))
-    (pad "3" smd roundrect (at 0.9375 0) (size 1.475 0.6) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25)
+    (pad "3" smd roundrect (at 0.9375 0 180) (size 1.475 0.6) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25)
       (net 37 "/RL1") (pinfunction "D") (pintype "passive") (tstamp 3817d735-fdaf-4a2e-9fff-1c96f52aff25))
     (model "${KICAD6_3DMODEL_DIR}/Package_TO_SOT_SMD.3dshapes/SOT-23.wrl"
       (offset (xyz 0 0 0))
@@ -2309,25 +2309,25 @@
     (pad "3" thru_hole circle (at 4.5 0 270) (size 1.2 1.2) (drill 0.7) (layers *.Cu *.Mask)
       (net 28 "Net-(J6-Pad3)") (pinfunction "D+") (pintype "bidirectional") (tstamp fe467c4d-a6b0-4613-9e87-049e8573c26c))
     (pad "4" thru_hole circle (at 7 0 270) (size 1.2 1.2) (drill 0.7) (layers *.Cu *.Mask)
-      (net 34 "Net-(K3-Pad12)") (pinfunction "GND") (pintype "power_in") (tstamp 20cbfe5b-ce21-4c8d-8043-ee55dd0ce40b))
+      (net 34 "Net-(J7-Pad10)") (pinfunction "GND") (pintype "power_in") (tstamp 20cbfe5b-ce21-4c8d-8043-ee55dd0ce40b))
     (pad "5" thru_hole circle (at 7.5 -1.5 270) (size 1.2 1.2) (drill 0.7) (layers *.Cu *.Mask)
       (net 29 "Net-(J6-Pad5)") (pinfunction "SSRX-") (pintype "output") (tstamp 09291125-e2fe-4589-95b2-02731eadc260))
     (pad "6" thru_hole circle (at 5.5 -1.5 270) (size 1.2 1.2) (drill 0.7) (layers *.Cu *.Mask)
       (net 30 "Net-(J6-Pad6)") (pinfunction "SSRX+") (pintype "output") (tstamp 903aad06-eeaf-4181-9ada-96e60b341512))
     (pad "7" thru_hole circle (at 3.5 -1.5 270) (size 1.2 1.2) (drill 0.7) (layers *.Cu *.Mask)
-      (net 34 "Net-(K3-Pad12)") (pinfunction "DRAIN") (pintype "passive") (tstamp 207242da-d032-42d2-ad3b-b964a8a73557))
+      (net 34 "Net-(J7-Pad10)") (pinfunction "DRAIN") (pintype "passive") (tstamp 207242da-d032-42d2-ad3b-b964a8a73557))
     (pad "8" thru_hole circle (at 1.5 -1.5 270) (size 1.2 1.2) (drill 0.7) (layers *.Cu *.Mask)
       (net 31 "Net-(J6-Pad8)") (pinfunction "SSTX-") (pintype "input") (tstamp 042a0037-0a23-4ef6-bf2d-97979fc44f5f))
     (pad "9" thru_hole circle (at -0.5 -1.5 270) (size 1.2 1.2) (drill 0.7) (layers *.Cu *.Mask)
       (net 32 "Net-(J6-Pad9)") (pinfunction "SSTX+") (pintype "input") (tstamp 929605a6-76b3-4ca5-8fa9-d9c12c597ec5))
     (pad "10" thru_hole circle (at 10.1 2 270) (size 3.5 3.5) (drill 2.3) (layers *.Cu *.Mask)
-      (net 34 "Net-(K3-Pad12)") (pinfunction "SHIELD") (pintype "passive") (tstamp 59c7f435-577a-4684-bfa5-4868c011d534))
+      (net 34 "Net-(J7-Pad10)") (pinfunction "SHIELD") (pintype "passive") (tstamp 59c7f435-577a-4684-bfa5-4868c011d534))
     (pad "10" thru_hole circle (at -3.1 2 270) (size 3.5 3.5) (drill 2.3) (layers *.Cu *.Mask)
-      (net 34 "Net-(K3-Pad12)") (pinfunction "SHIELD") (pintype "passive") (tstamp d1429f2b-bee4-4437-8bc2-9e1f3473f933))
-    (model "${KICAD6_3DMODEL_DIR}/Connector_USB.3dshapes/USB3_A_Molex_48393-001.wrl"
-      (offset (xyz 0 0 0))
+      (net 34 "Net-(J7-Pad10)") (pinfunction "SHIELD") (pintype "passive") (tstamp d1429f2b-bee4-4437-8bc2-9e1f3473f933))
+    (model "${USB_XWITCH}/lib/footprint/3D/USB3_A_AdamTech_USB-A3-S-RA.step"
+      (offset (xyz 3.5 -3.5 4))
       (scale (xyz 1 1 1))
-      (rotate (xyz 0 0 0))
+      (rotate (xyz 0 180 0))
     )
   )
 
@@ -2340,7 +2340,7 @@
     (property "Sheetname" "")
     (path "/942bc69f-26c2-4b20-b79a-ab3f809d5f15")
     (attr smd)
-    (fp_text reference "D3" (at 5.5 2 180) (layer "F.SilkS")
+    (fp_text reference "D3" (at 0 -3 -90) (layer "F.SilkS")
       (effects (font (size 1 1) (thickness 0.15)))
       (tstamp ccdcd5ca-a723-4169-9568-dded1075dd77)
     )
@@ -2569,6 +2569,11 @@
       (net 17 "GND") (pinfunction "GND") (pintype "passive") (solder_paste_margin -0.75) (tstamp d4977a6e-b824-4cd7-a8e2-21e160fb5299))
     (pad "20" smd rect (at -0.3375 1.0875 270) (size 0.225 0.725) (layers "F.Cu" "F.Paste" "F.Mask")
       (net 17 "GND") (pinfunction "GND") (pintype "passive") (solder_paste_margin -0.75) (tstamp f4f8d009-d26e-4520-8b2a-a18df864dacd))
+    (model "${USB_XWITCH}/lib/footprint/3D/TQFN_ZB_20.step"
+      (offset (xyz 0 0 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz 0 0 0))
+    )
   )
 
   (footprint "TestPoint:TestPoint_Pad_D1.0mm" (layer "F.Cu")
@@ -2823,10 +2828,10 @@
       (net 53 "Net-(J3-Pad10)") (pinfunction "SHIELD") (pintype "passive") (tstamp 92ad57d1-829c-491c-87ca-ad8be799007d))
     (pad "10" thru_hole circle (at -3.1 2) (size 3.5 3.5) (drill 2.3) (layers *.Cu *.Mask)
       (net 53 "Net-(J3-Pad10)") (pinfunction "SHIELD") (pintype "passive") (tstamp f60d6ec2-9879-421f-a504-65c2935b2178))
-    (model "${KICAD6_3DMODEL_DIR}/Connector_USB.3dshapes/USB3_A_Molex_48393-001.wrl"
-      (offset (xyz 0 0 0))
+    (model "${USB_XWITCH}/lib/footprint/3D/USB3_A_AdamTech_USB-A3-S-RA.step"
+      (offset (xyz 3.5 -3.5 4))
       (scale (xyz 1 1 1))
-      (rotate (xyz 0 0 0))
+      (rotate (xyz 0 180 0))
     )
   )
 
@@ -3048,7 +3053,7 @@
 
   (footprint "Package_TO_SOT_SMD:SOT-23" (layer "F.Cu")
     (tedit 5FA16958) (tstamp dca65665-9cce-4680-b74d-4392f96fb4fc)
-    (at 115.17 21.95)
+    (at 127.5 102)
     (descr "SOT, 3 Pin (https://www.jedec.org/system/files/docs/to-236h.pdf variant AB), generated with kicad-footprint-generator ipc_gullwing_generator.py")
     (tags "SOT TO_SOT_SMD")
     (property "Sheetfile" "usb_xwitch.kicad_sch")
@@ -3059,11 +3064,11 @@
       (effects (font (size 1 1) (thickness 0.15)))
       (tstamp 4d099a73-0397-4426-b659-d29dace18887)
     )
-    (fp_text value "2N7002P" (at 0 2.4) (layer "F.Fab")
+    (fp_text value "2N7002P" (at 0 2.4) (layer "F.Fab") hide
       (effects (font (size 1 1) (thickness 0.15)))
       (tstamp d05b2332-5d1a-4fa5-9233-c1d2cf7d1c7e)
     )
-    (fp_text user "${REFERENCE}" (at 0 0) (layer "F.Fab")
+    (fp_text user "${REFERENCE}" (at 0 0) (layer "F.Fab") hide
       (effects (font (size 0.32 0.32) (thickness 0.05)))
       (tstamp 167ab8f3-28e1-4652-9028-f170a302c911)
     )
@@ -3152,10 +3157,10 @@
       (net 17 "GND") (pinfunction "SHIELD") (pintype "passive") (tstamp b198ad03-fa49-4ff2-a764-1778a1769d00))
     (pad "10" thru_hole circle (at 10.1 2 180) (size 3.5 3.5) (drill 2.3) (layers *.Cu *.Mask)
       (net 17 "GND") (pinfunction "SHIELD") (pintype "passive") (tstamp e0c427bc-6192-4a23-a8ea-5f41729834e0))
-    (model "${KICAD6_3DMODEL_DIR}/Connector_USB.3dshapes/USB3_A_Molex_48393-001.wrl"
-      (offset (xyz 0 0 0))
+    (model "${USB_XWITCH}/lib/footprint/3D/USB3_A_AdamTech_USB-A3-S-RA.step"
+      (offset (xyz 3.5 -3.5 4))
       (scale (xyz 1 1 1))
-      (rotate (xyz 0 0 0))
+      (rotate (xyz 0 180 0))
     )
   )
 
@@ -3197,7 +3202,7 @@
     (fp_line (start 10.4 -0.55) (end 10.4 13.7) (layer "F.Fab") (width 0.1) (tstamp 3900a3b0-431b-4976-9497-7ceb8bad1232))
     (fp_line (start 10.35 13.7) (end -3.4 13.7) (layer "F.Fab") (width 0.1) (tstamp 802934f8-7c36-4345-a27f-3454fedf92f5))
     (pad "1" thru_hole circle (at 0 0 270) (size 1.2 1.2) (drill 0.7) (layers *.Cu *.Mask)
-      (net 26 "Net-(K3-Pad21)") (pinfunction "VBUS") (pintype "power_in") (tstamp d7453f44-321c-4050-b18b-a12237a10415))
+      (net 26 "Net-(J6-Pad1)") (pinfunction "VBUS") (pintype "power_in") (tstamp d7453f44-321c-4050-b18b-a12237a10415))
     (pad "2" thru_hole circle (at 2.5 0 270) (size 1.2 1.2) (drill 0.7) (layers *.Cu *.Mask)
       (net 27 "Net-(J6-Pad2)") (pinfunction "D-") (pintype "bidirectional") (tstamp d932e413-55ae-457b-a959-bad83c84d724))
     (pad "3" thru_hole circle (at 4.5 0 270) (size 1.2 1.2) (drill 0.7) (layers *.Cu *.Mask)
@@ -3218,10 +3223,10 @@
       (net 17 "GND") (pinfunction "SHIELD") (pintype "passive") (tstamp 2e687927-3955-4336-8c63-93be156bb630))
     (pad "10" thru_hole circle (at -3.1 2 270) (size 3.5 3.5) (drill 2.3) (layers *.Cu *.Mask)
       (net 17 "GND") (pinfunction "SHIELD") (pintype "passive") (tstamp 6dcb6b48-87fc-45e5-b5d2-2e548601fab8))
-    (model "${KICAD6_3DMODEL_DIR}/Connector_USB.3dshapes/USB3_A_Molex_48393-001.wrl"
-      (offset (xyz 0 0 0))
+    (model "${USB_XWITCH}/lib/footprint/3D/USB3_A_AdamTech_USB-A3-S-RA.step"
+      (offset (xyz 3.5 -3.5 4))
       (scale (xyz 1 1 1))
-      (rotate (xyz 0 0 0))
+      (rotate (xyz 0 180 0))
     )
   )
 
@@ -3314,11 +3319,11 @@
     (pad "11" thru_hole circle (at 7.62 0 180) (size 1.6 1.6) (drill 0.8) (layers *.Cu *.Mask)
       (net 17 "GND") (pintype "passive") (tstamp 311b8624-7d9a-437a-9da5-5987fabc6fde))
     (pad "12" thru_hole circle (at 12.7 0 180) (size 1.6 1.6) (drill 0.8) (layers *.Cu *.Mask)
-      (net 34 "Net-(K3-Pad12)") (pintype "passive") (tstamp 3d25ea00-3597-4b84-9896-d06c9254cef7))
+      (net 34 "Net-(J7-Pad10)") (pintype "passive") (tstamp 3d25ea00-3597-4b84-9896-d06c9254cef7))
     (pad "14" thru_hole circle (at 17.78 0 180) (size 1.6 1.6) (drill 0.8) (layers *.Cu *.Mask)
       (net 69 "unconnected-(K3-Pad14)") (pintype "passive+no_connect") (tstamp cd676e39-8b0b-4a97-a5f7-f1a894ba4f9c))
     (pad "21" thru_hole circle (at 7.62 -7.62 180) (size 1.6 1.6) (drill 0.8) (layers *.Cu *.Mask)
-      (net 26 "Net-(K3-Pad21)") (pintype "passive") (tstamp 2e49cb80-72d5-4c7c-ad59-9d99ad1c9f65))
+      (net 26 "Net-(J6-Pad1)") (pintype "passive") (tstamp 2e49cb80-72d5-4c7c-ad59-9d99ad1c9f65))
     (pad "22" thru_hole circle (at 12.7 -7.62 180) (size 1.6 1.6) (drill 0.8) (layers *.Cu *.Mask)
       (net 33 "/VBUS3") (pintype "passive") (tstamp a0943e33-5217-4cb2-9cb6-2c232f98dc8e))
     (pad "24" thru_hole circle (at 17.78 -7.62 270) (size 1.6 1.6) (drill 0.8) (layers *.Cu *.Mask)
@@ -3393,10 +3398,10 @@
       (net 17 "GND") (pinfunction "SHIELD") (pintype "passive") (tstamp 397da05d-f62f-4a6f-a7e2-b60ed3032215))
     (pad "10" thru_hole circle (at -3.1 2) (size 3.5 3.5) (drill 2.3) (layers *.Cu *.Mask)
       (net 17 "GND") (pinfunction "SHIELD") (pintype "passive") (tstamp eeb972fd-4894-42b3-ac5e-e9d55d73cf62))
-    (model "${KICAD6_3DMODEL_DIR}/Connector_USB.3dshapes/USB3_A_Molex_48393-001.wrl"
-      (offset (xyz 0 0 0))
+    (model "${USB_XWITCH}/lib/footprint/3D/USB3_A_AdamTech_USB-A3-S-RA.step"
+      (offset (xyz 3.5 -3.5 4))
       (scale (xyz 1 1 1))
-      (rotate (xyz 0 0 0))
+      (rotate (xyz 0 180 0))
     )
   )
 
@@ -3450,8 +3455,8 @@
   (gr_arc (start 100 83) (mid 100.87868 80.87868) (end 103 80) (layer "Edge.Cuts") (width 0.1) (tstamp 956c497f-1de9-4a55-b9e9-f04986655cf6))
   (gr_line (start 192 83) (end 192 133.5) (layer "Edge.Cuts") (width 0.1) (tstamp bbad6fe3-a4e5-4efd-a036-b6b2058e5879))
   (gr_line (start 100 83) (end 100 133.5) (layer "Edge.Cuts") (width 0.1) (tstamp e199d808-0092-4b40-8fec-63def74dfbf5))
-  (gr_text "RNL USB-XWitch" (at 177 134.5) (layer "F.SilkS") (tstamp 98e7598c-2765-4892-a4be-6b9fd9c70e91)
-    (effects (font (size 1 1) (thickness 0.15)))
+  (gr_text "RNL USB-Xwitch v0.1" (at 177 134.5) (layer "F.SilkS") (tstamp 98e7598c-2765-4892-a4be-6b9fd9c70e91)
+    (effects (font (size 1.2 1) (thickness 0.2) italic))
   )
 
   (via (at 103.5 133) (size 6.2) (drill 3.25) (layers "F.Cu" "B.Cu") (free) (net 0) (tstamp 3a267f6a-9c1b-44d3-a852-9440dbd19fc3))

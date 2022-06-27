@@ -1792,7 +1792,6 @@
     )
   )
 
-
   (junction (at 100.33 146.05) (diameter 0) (color 0 0 0 0)
     (uuid 11bad38c-2293-4672-a72d-054dcfb9b397)
   )
@@ -1902,7 +1901,7 @@
   (no_connect (at 43.18 73.66) (uuid 75df9d90-1b85-489e-9b08-365c60ea6911))
   (no_connect (at 45.72 73.66) (uuid 75df9d90-1b85-489e-9b08-365c60ea6912))
   (no_connect (at 74.93 148.59) (uuid ae77648d-a138-48ed-a3a0-a001c2afbf5d))
-  (no_connect (at 74.93 158.75) (uuid ae77648d-a138-48ed-a3a0-a001c2afbf5d))
+  (no_connect (at 74.93 158.75) (uuid ae77648d-a138-48ed-a3a0-a001c2afbf5e))
   (no_connect (at 60.96 20.32) (uuid dd5491c9-adf1-40cf-8023-4373dff86648))
   (no_connect (at 60.96 27.94) (uuid dd5491c9-adf1-40cf-8023-4373dff86649))
   (no_connect (at 60.96 33.02) (uuid e4c21737-9b3e-4d17-82f6-95370e29b23e))
@@ -4833,10 +4832,10 @@
     (property "Datasheet" "" (id 3) (at 220.98 43.18 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid ab692aa4-62e5-477c-873f-b90757164051))
-    (pin "1" (uuid ab692aa4-62e5-477c-873f-b90757164051))
-    (pin "2" (uuid 8d0eb11a-3109-4068-93d7-5e82a3efe02d))
-    (pin "2" (uuid 8d0eb11a-3109-4068-93d7-5e82a3efe02d))
+    (pin "1" (uuid ab692aa4-62e5-477c-873f-b90757164052))
+    (pin "1" (uuid ab692aa4-62e5-477c-873f-b90757164052))
+    (pin "2" (uuid 8d0eb11a-3109-4068-93d7-5e82a3efe02e))
+    (pin "2" (uuid 8d0eb11a-3109-4068-93d7-5e82a3efe02e))
   )
 
   (symbol (lib_id "Connector:TestPoint") (at 21.59 73.66 180) (unit 1)
