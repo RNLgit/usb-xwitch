@@ -1,6 +1,6 @@
 (footprint "RPi_Pico_SMD" (version 20211014) (generator pcbnew)
   (layer "F.Cu")
-  (tedit 62B7FF79)
+  (tedit 62B92A1F)
   (descr "Through hole straight pin header, 2x20, 2.54mm pitch, double rows")
   (tags "Through hole pin header THT 2x20 2.54mm double row")
   (attr through_hole)
@@ -315,7 +315,7 @@
   (pad "41" smd rect (at -2.54 23.9 90) (size 3.5 1.7) (drill (offset -0.9 0)) (layers "F.Cu" "F.Mask") (tstamp b21299b9-3c4d-43df-b399-7f9b08eb5470))
   (pad "42" smd rect (at 0 23.9 90) (size 3.5 1.7) (drill (offset -0.9 0)) (layers "F.Cu" "F.Mask") (tstamp 751d823e-1d7b-4501-9658-d06d459b0e16))
   (pad "43" smd rect (at 2.54 23.9 90) (size 3.5 1.7) (drill (offset -0.9 0)) (layers "F.Cu" "F.Mask") (tstamp aadc3df5-0e2d-4f3d-b72e-6f184da74c89))
-  (model "C:/Users/lirun/PythonProjects/usb-xwitch/lib/footprint/Pico.wrl"
+  (model "${USB_XWITCH}/lib/footprint/3D/RPi_Pico_SMD.wrl"
     (offset (xyz 0 0 0))
     (scale (xyz 1 1 1))
     (rotate (xyz 0 0 0))

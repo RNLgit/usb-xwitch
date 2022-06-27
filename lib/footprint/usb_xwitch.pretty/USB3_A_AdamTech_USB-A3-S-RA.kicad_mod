@@ -1,6 +1,6 @@
 (footprint "USB3_A_AdamTech_USB-A3-S-RA" (version 20211014) (generator pcbnew)
   (layer "F.Cu")
-  (tedit 62A35165)
+  (tedit 62B929AB)
   (descr "USB 3.0, type A, right angle (http://www.molex.com/pdm_docs/sd/483930003_sd.pdf)")
   (tags "USB 3.0 type A right angle")
   (attr through_hole)
@@ -43,9 +43,9 @@
   (pad "9" thru_hole circle (at -0.5 -1.5) (size 1.2 1.2) (drill 0.7) (layers *.Cu *.Mask) (tstamp 1389f6f4-7a33-4a60-a0bf-86d75a9bcab1))
   (pad "10" thru_hole circle (at 10.1 2) (size 3.5 3.5) (drill 2.3) (layers *.Cu *.Mask) (tstamp 0fb4509c-66fd-487f-a0f2-6b9620ff7ca9))
   (pad "10" thru_hole circle (at -3.1 2) (size 3.5 3.5) (drill 2.3) (layers *.Cu *.Mask) (tstamp b62a60e8-2e33-40b8-97b8-4a65b13a1fb0))
-  (model "${KICAD6_3DMODEL_DIR}/Connector_USB.3dshapes/USB3_A_Molex_48393-001.wrl"
-    (offset (xyz 0 0 0))
+  (model "${USB_XWITCH}/lib/footprint/3D/USB3_A_AdamTech_USB-A3-S-RA.step"
+    (offset (xyz 3.5 -3.25 4))
     (scale (xyz 1 1 1))
-    (rotate (xyz 0 0 0))
+    (rotate (xyz 0 180 0))
   )
 )
