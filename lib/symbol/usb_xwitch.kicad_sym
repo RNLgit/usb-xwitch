@@ -579,7 +579,7 @@
     (property "Value" "Relay_DPDT_Panasonic_AGQ200A4H" (id 1) (at 16.51 1.27 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Footprint" "Relay_THT:Relay_DPDT_Finder_30.22" (id 2) (at 34.29 -0.762 0)
+    (property "Footprint" "usb_xwitch:Relay_DPDT_Panasonic_AGQ200A4H" (id 2) (at 34.29 -0.762 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "https://media.digikey.com/pdf/Data%20Sheets/Panasonic%20Electric%20Works%20PDFs/AGQ_(GQ)_Relays.pdf" (id 3) (at 0 0 0)
