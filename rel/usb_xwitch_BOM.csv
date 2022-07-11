@@ -13,7 +13,7 @@ PI3USB302-A,MUX1,usb_xwitch:USB_MUX_DEMUX_PI3USB302-A,
 18K,"R1,R2",Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder,
 33K,"R4,R5",Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder,
 10K,R7,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,
-330Ω,"R9,R10,R11,R12",Resistor_SMD:R_0402_1005Metric_Pad0.72x0.64mm_HandSolder,
+330Ω,"R9,R10,R11,R12",Resistor_SMD:R_0402_1005Metric_Pad0.72x0.64mm_HandSolder,C25104
 C2689642,SW1,usb_xwitch:SW_SPST_CK_PTS636_SP43_SMTR,C2689642
 TestPoint,"TP1,TP2,TP3,TP6,TP7,TP8,TP9,TP10,TP11,TP12,TP13,TP16,TP17",TestPoint:TestPoint_Pad_D1.0mm,
 TestPoint,TP19,TestPoint:TestPoint_Pad_D1.5mm,
