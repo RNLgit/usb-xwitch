@@ -16,6 +16,10 @@ ADC_REF_V = 3.3  # ADC reference voltage
 led_pico_stat = False
 
 
+def _intr_flip_pico_led(pin) -> None:
+    flip_pico_led()
+
+
 def pico_led(en: bool) -> None:
     """
     toggle on off of pico onboard led
@@ -23,7 +27,7 @@ def pico_led(en: bool) -> None:
     _led_pico.value(en)
 
 
-def flip_pico_led():
+def flip_pico_led() -> None:
     """
     flip pico onboard led status
     """
@@ -45,5 +49,5 @@ def get_adc(no: int) -> float:
 _led_pico = Pin(PICO_LED, Pin.OUT)
 _adc_a1 = ADC(ADC_1_1)
 _adc_a2 = ADC(ADC_1_2)
-_swa = Pin(SW_A, Pin.IN, Pin.PULL_DOWN)
-_swa.irq(trigger=Pin.IRQ_RISING, handler=flip_pico_led)
+_swa = Pin(SW_A, Pin.IN, Pin.PULL_UP)
+_swa.irq(trigger=Pin.IRQ_FALLING, handler=_intr_flip_pico_led)
