@@ -51,7 +51,7 @@ def get_adc(no: int) -> float:
     return adc.get(no).read_u16() * ADC_REF_V / 65536 / ADC_RATIO
 
 
-def set_cha(ch_no: int) -> None:
+def set_cha_pos(ch_no: int) -> None:
     """
     set cha (with mux ic channel) switch position. switch to 1 or 2
     """
@@ -61,7 +61,7 @@ def set_cha(ch_no: int) -> None:
     _cha_rel.value(ch_no - 1)
 
 
-def get_cha() -> int:
+def get_cha_pos() -> int:
     """
     get current cha switch position. Expect 1 or 2.
     """
