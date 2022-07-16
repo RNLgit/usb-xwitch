@@ -1,5 +1,10 @@
 from machine import Pin, ADC
 
+__version__ = '0.1'
+
+HIGH = 1
+LOW = 0
+
 PICO_LED = 25  # Pico board default led
 PD_A = 10  # CHA power down enable MUX IC
 SEL_A = 11  # CHA MUX selection pin
@@ -46,8 +51,66 @@ def get_adc(no: int) -> float:
     return adc.get(no).read_u16() * ADC_REF_V / 65536 / ADC_RATIO
 
 
+def set_cha(ch_no: int) -> None:
+    """
+    set cha (with mux ic channel) switch position. switch to 1 or 2
+    """
+    if ch_no not in [1, 2]:
+        raise ValueError(f'cannot switch cha to port {ch_no}. Only 2 channels supported')
+    _cha_sel.value(ch_no - 1)
+    _cha_rel.value(ch_no - 1)
+
+
+def get_cha() -> int:
+    """
+    get current cha switch position. Expect 1 or 2.
+    """
+    sel, rel = _cha_sel.value(), _cha_rel.value()
+    if sel ^ rel:  # if not all 0 or all 1
+        raise ValueError(f'internal error. IC selection and Relay selection not match. sel:{sel}, rel:{rel}')
+    return sel + 1
+
+
+def set_chb(on_off: bool) -> None:
+    """
+    set channel B power on / off
+    """
+    _chb_rel.value(on_off)
+
+
+def get_chb() -> bool:
+    """
+    get bool stat of channel B VBus power
+    """
+    return bool(_chb_rel.value())
+
+
+def set_chc(on_off: bool) -> None:
+    """
+    set channel C power on / off
+    """
+    _chc_rel.value(on_off)
+
+
+def get_chc() -> bool:
+    """
+    get bool stat of channel C VBus power
+    """
+    return bool(_chc_rel.value())
+
+
+def version():
+    return f'usb-xwitch ver:{__version__}'
+
+
 _led_pico = Pin(PICO_LED, Pin.OUT)
 _adc_a1 = ADC(ADC_1_1)
 _adc_a2 = ADC(ADC_1_2)
 _swa = Pin(SW_A, Pin.IN, Pin.PULL_UP)
 _swa.irq(trigger=Pin.IRQ_FALLING, handler=_intr_flip_pico_led)
+_cha_pd = Pin(PD_A, Pin.OUT)
+_cha_pd.value(LOW)
+_cha_sel = Pin(SEL_A, Pin.OUT)
+_cha_rel = Pin(REL_A, Pin.OUT)
+_chb_rel = Pin(REL_B, Pin.OUT)
+_chc_rel = Pin(REL_C, Pin.OUT)
