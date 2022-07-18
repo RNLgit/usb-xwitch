@@ -22,7 +22,13 @@ led_pico_stat = False
 
 
 def _intr_flip_pico_led(pin) -> None:
-    flip_pico_led()
+    cha_cur = get_cha_pos()
+    if cha_cur == 1:
+        set_cha_pos(2)
+    elif cha_cur == 2:
+        set_cha_pos(1)
+    else:
+        raise ValueError(f'channel A invalid position:{cha_cur}')
 
 
 def pico_led(en: bool) -> None:
