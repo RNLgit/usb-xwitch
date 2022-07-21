@@ -8,9 +8,11 @@ class SerialREPL(object):
         self.serial = serial.Serial(port_name, baudrate=baud, timeout=0)
         if not self.serial.isOpen():
             self.serial.open()
-        self.rx_queue =
+        self.rx_queue = deque(maxlen=10)
         self.rx_th = Thread(target=self.__rx_thread, args=())
+        self.rx_th.start()
 
     def __rx_thread(self):
         while self.serial.isOpen():
-            pass
+            if self.serial.inWaiting() > 0:
+                self.serial.readline()
