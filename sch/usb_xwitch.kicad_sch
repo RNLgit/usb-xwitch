@@ -5414,8 +5414,29 @@
     (pin "1" (uuid 699c117a-95e6-4843-9f60-ac8c8c84c265))
   )
 
+  (sheet (at 132.08 163.83) (size 17.78 20.32) (fields_autoplaced)
+    (stroke (width 0.1524) (type solid) (color 0 0 0 0))
+    (fill (color 0 0 0 0.0000))
+    (uuid 71a687af-7ac4-4373-9578-b04c8798d7c9)
+    (property "Sheet name" "xwitch_controller" (id 0) (at 132.08 163.1184 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheet file" "xwitch_controller.kicad_sch" (id 1) (at 132.08 184.7346 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+    (pin "+5V" input (at 149.86 166.37 0)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid 7aae25a9-ebd8-4cdc-acd2-3dec1f6b8e99)
+    )
+    (pin "+3.3V" input (at 149.86 168.91 0)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid ff7c7303-fac9-4b5b-bcd8-c8387ff43a55)
+    )
+  )
+
   (sheet_instances
     (path "/" (page "1"))
+    (path "/71a687af-7ac4-4373-9578-b04c8798d7c9" (page "2"))
   )
 
   (symbol_instances
@@ -5517,6 +5538,15 @@
     )
     (path "/b75d8c90-2f3e-4c90-a936-ef9b34627542"
       (reference "#PWR0103") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/71a687af-7ac4-4373-9578-b04c8798d7c9/1286e70f-88dd-4928-a7ad-fad2a4af637f"
+      (reference "#PWR?") (unit 1) (value "+3V3") (footprint "")
+    )
+    (path "/71a687af-7ac4-4373-9578-b04c8798d7c9/1366a3b4-a0f2-486f-ad7d-bc13b9074e54"
+      (reference "#PWR?") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/71a687af-7ac4-4373-9578-b04c8798d7c9/7262cc2d-b219-49cf-9e8f-7beb9defa079"
+      (reference "#PWR?") (unit 1) (value "+5V") (footprint "")
     )
     (path "/8bf33d1e-be8e-4a75-bd6d-ec65058ec7e7"
       (reference "C1") (unit 1) (value "100n") (footprint "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder")
