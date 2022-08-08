@@ -5545,8 +5545,17 @@
     (path "/71a687af-7ac4-4373-9578-b04c8798d7c9/1366a3b4-a0f2-486f-ad7d-bc13b9074e54"
       (reference "#PWR?") (unit 1) (value "GND") (footprint "")
     )
+    (path "/71a687af-7ac4-4373-9578-b04c8798d7c9/60fa5aeb-7164-4d0f-b188-73e1d2e711dd"
+      (reference "#PWR?") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/71a687af-7ac4-4373-9578-b04c8798d7c9/689a43bf-629c-4e6d-bd5e-0372e0ec5229"
+      (reference "#PWR?") (unit 1) (value "GND") (footprint "")
+    )
     (path "/71a687af-7ac4-4373-9578-b04c8798d7c9/7262cc2d-b219-49cf-9e8f-7beb9defa079"
       (reference "#PWR?") (unit 1) (value "+5V") (footprint "")
+    )
+    (path "/71a687af-7ac4-4373-9578-b04c8798d7c9/8cc07faa-243d-46f3-848e-011dda2e16b5"
+      (reference "#PWR?") (unit 1) (value "VBUS") (footprint "")
     )
     (path "/8bf33d1e-be8e-4a75-bd6d-ec65058ec7e7"
       (reference "C1") (unit 1) (value "100n") (footprint "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder")
@@ -5599,6 +5608,9 @@
     (path "/9a021193-05c2-4be4-9856-8e80e38ef0af"
       (reference "D8") (unit 1) (value "VS-10BQ015") (footprint "Diode_SMD:D_SMB_Handsoldering")
     )
+    (path "/71a687af-7ac4-4373-9578-b04c8798d7c9/ca42dcb4-7d72-4a96-917e-b541d1bfbb36"
+      (reference "D?") (unit 1) (value "B5819W SL") (footprint "Diode_SMD:D_SOD-123")
+    )
     (path "/8631f63c-abc2-47db-96b3-ee2fd07e9d0a"
       (reference "J1") (unit 1) (value "USB3_A") (footprint "usb_xwitch:USB3_A_AdamTech_USB-A3-S-RA")
     )
@@ -5625,6 +5637,9 @@
     )
     (path "/05076186-aa8c-4422-942d-c35ba457f49e"
       (reference "J9") (unit 1) (value "C65114") (footprint "Connector_PinHeader_2.54mm:PinHeader_2x03_P2.54mm_Vertical")
+    )
+    (path "/71a687af-7ac4-4373-9578-b04c8798d7c9/5c1af89e-9217-40c2-9e2e-d6deb8e39e5e"
+      (reference "J?") (unit 1) (value "USB_B_Micro") (footprint "Connector_USB:USB_Micro-B_Molex-105017-0001")
     )
     (path "/1ad93629-9c29-44d2-a5f4-c38945e05903"
       (reference "JP1") (unit 1) (value "SolderJumper_2_Open") (footprint "Jumper:SolderJumper-2_P1.3mm_Open_RoundedPad1.0x1.5mm")
@@ -5686,6 +5701,12 @@
     (path "/ef6cee14-a255-4a4a-a342-1e947e99208d"
       (reference "R12") (unit 1) (value "330Ω") (footprint "Resistor_SMD:R_0402_1005Metric_Pad0.72x0.64mm_HandSolder")
     )
+    (path "/71a687af-7ac4-4373-9578-b04c8798d7c9/123f79e0-ec77-448a-bd06-69f37a02b408"
+      (reference "R?") (unit 1) (value "10K") (footprint "Resistor_SMD:R_0402_1005Metric_Pad0.72x0.64mm_HandSolder")
+    )
+    (path "/71a687af-7ac4-4373-9578-b04c8798d7c9/d1c6739a-98e3-4c1b-86ed-3f81ffb01182"
+      (reference "R?") (unit 1) (value "5.6K") (footprint "Resistor_SMD:R_0402_1005Metric_Pad0.72x0.64mm_HandSolder")
+    )
     (path "/af047df2-64d9-4941-aac1-dbe0147cb1ee"
       (reference "SW1") (unit 1) (value "C2689642") (footprint "usb_xwitch:SW_SPST_CK_PTS636_SP43_SMTR")
     )
@@ -5733,6 +5754,9 @@
     )
     (path "/bb6a880b-1e04-4964-aba7-0ed014109109"
       (reference "U1") (unit 1) (value "Pico") (footprint "usb_xwitch:RPi_Pico_SMD")
+    )
+    (path "/71a687af-7ac4-4373-9578-b04c8798d7c9/fbb7bdec-db9d-4bce-b0ba-c91be3df3ed0"
+      (reference "U?") (unit 1) (value "RP2040") (footprint "usb_xwitch:RP2040")
     )
   )
 )
