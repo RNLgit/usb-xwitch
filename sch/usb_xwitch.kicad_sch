@@ -5755,6 +5755,9 @@
     (path "/bb6a880b-1e04-4964-aba7-0ed014109109"
       (reference "U1") (unit 1) (value "Pico") (footprint "usb_xwitch:RPi_Pico_SMD")
     )
+    (path "/71a687af-7ac4-4373-9578-b04c8798d7c9/5892fcde-68d9-4471-9c3a-5258c2b27078"
+      (reference "U?") (unit 1) (value "RT8059GJ5Copy") (footprint "Package_TO_SOT_SMD:TSOT-23-5")
+    )
     (path "/71a687af-7ac4-4373-9578-b04c8798d7c9/fbb7bdec-db9d-4bce-b0ba-c91be3df3ed0"
       (reference "U?") (unit 1) (value "RP2040") (footprint "usb_xwitch:RP2040")
     )
