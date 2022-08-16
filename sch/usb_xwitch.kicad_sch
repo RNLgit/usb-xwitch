@@ -5810,7 +5810,7 @@
       (reference "U?") (unit 1) (value "RP2040") (footprint "usb_xwitch:RP2040")
     )
     (path "/71a687af-7ac4-4373-9578-b04c8798d7c9/6ff0298a-f274-4b49-b887-a8bf253fd242"
-      (reference "Y?") (unit 1) (value "Crystal_GND24") (footprint "")
+      (reference "Y?") (unit 1) (value "12MHz") (footprint "Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm_HandSoldering")
     )
   )
 )
