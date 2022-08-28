@@ -345,7 +345,9 @@
     }
   },
   "libraries": {
-    "pinned_footprint_libs": [],
+    "pinned_footprint_libs": [
+      "usb_xwitch"
+    ],
     "pinned_symbol_libs": []
   },
   "meta": {
