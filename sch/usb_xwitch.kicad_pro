@@ -436,6 +436,18 @@
     [
       "71a687af-7ac4-4373-9578-b04c8798d7c9",
       "xwitch_controller"
+    ],
+    [
+      "c1fd4a19-4f0b-4bb0-a205-40545b940102",
+      "usb3_switch"
+    ],
+    [
+      "ab8d1bc3-acc1-4b48-9e8a-6839844f4523",
+      "usb2_hub"
+    ],
+    [
+      "ca613430-cf68-48b4-8830-15e23765d7e2",
+      "power_and_io"
     ]
   ],
   "text_variables": {}
