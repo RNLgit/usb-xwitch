@@ -1541,6 +1541,9 @@
     (path "/c1fd4a19-4f0b-4bb0-a205-40545b940102/ec48c70f-73bd-4a13-b9d5-de2452f50d6a"
       (reference "TP?") (unit 1) (value "TestPoint") (footprint "TestPoint:TestPoint_Pad_D1.0mm")
     )
+    (path "/ca613430-cf68-48b4-8830-15e23765d7e2/3c47fc73-675d-451e-82ac-ca043b02d89a"
+      (reference "U?") (unit 1) (value "MP1584EN-LF-Z") (footprint "usb_xwitch:MP1584EN-LF-Z")
+    )
     (path "/71a687af-7ac4-4373-9578-b04c8798d7c9/3f62b04e-9828-48b7-9cd4-eae54512eb88"
       (reference "U?") (unit 1) (value "RP2040") (footprint "usb_xwitch:RP2040-QFN-56")
     )
