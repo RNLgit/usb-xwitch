@@ -4,6 +4,12 @@
 
   (paper "A4")
 
+  (title_block
+    (date "2022-09-12")
+    (rev "0.2")
+    (comment 1 "Runnan Li")
+  )
+
   (lib_symbols
     (symbol "Connector:TestPoint" (pin_numbers hide) (pin_names (offset 0.762) hide) (in_bom yes) (on_board yes)
       (property "Reference" "TP" (id 0) (at 0 6.858 0)
@@ -1624,6 +1630,7 @@
     )
   )
 
+
   (junction (at 257.81 80.01) (diameter 0) (color 0 0 0 0)
     (uuid 24834ff3-23ce-4778-898d-491120fb4fbb)
   )
@@ -2656,7 +2663,7 @@
     (property "Reference" "R7" (id 0) (at 260.35 31.7499 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Value" "330Ω" (id 1) (at 260.35 34.2899 0)
+    (property "Value" "330" (id 1) (at 260.35 34.2899 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Footprint" "Resistor_SMD:R_0402_1005Metric_Pad0.72x0.64mm_HandSolder" (id 2) (at 258.826 33.274 90)
@@ -3118,7 +3125,7 @@
     (property "Reference" "R8" (id 0) (at 269.24 31.7499 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Value" "330Ω" (id 1) (at 269.24 34.2899 0)
+    (property "Value" "330" (id 1) (at 269.24 34.2899 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Footprint" "Resistor_SMD:R_0402_1005Metric_Pad0.72x0.64mm_HandSolder" (id 2) (at 267.716 33.274 90)
