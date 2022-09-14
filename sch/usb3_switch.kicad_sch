@@ -1630,7 +1630,6 @@
     )
   )
 
-
   (junction (at 257.81 80.01) (diameter 0) (color 0 0 0 0)
     (uuid 24834ff3-23ce-4778-898d-491120fb4fbb)
   )
@@ -3404,7 +3403,7 @@
     (property "Value" "PI3USB302-A" (id 1) (at 144.78 116.84 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Footprint" "USB_MUX_DEMUX_PI3USB302-A:USB_MUX_DEMUX_PI3USB302-A" (id 2) (at 142.24 129.54 0)
+    (property "Footprint" "usb_xwitch:USB_MUX_DEMUX_PI3USB302-A" (id 2) (at 142.24 129.54 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "" (id 3) (at 140.97 129.54 0)
