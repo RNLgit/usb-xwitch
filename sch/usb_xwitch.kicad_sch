@@ -1610,19 +1610,19 @@
       (reference "J5") (unit 1) (value "USB3_A") (footprint "usb_xwitch:USB3_A_AdamTech_USB-A3-S-RA")
     )
     (path "/ab8d1bc3-acc1-4b48-9e8a-6839844f4523/ef8073a8-89ef-4f94-9916-c165283637d3"
-      (reference "J6") (unit 1) (value "USB_A") (footprint "Connector_USB:USB_A_CONNFLY_DS1095-WNR0")
+      (reference "J6") (unit 1) (value "USB_A") (footprint "Connector_USB:USB_A_Wuerth_61400826021_Horizontal_Stacked")
     )
     (path "/ab8d1bc3-acc1-4b48-9e8a-6839844f4523/ca00d95c-e544-4eb9-950f-4ea0afaeacb3"
-      (reference "J7") (unit 1) (value "USB_A") (footprint "Connector_USB:USB_A_CONNFLY_DS1095-WNR0")
+      (reference "J7") (unit 1) (value "USB_A") (footprint "Connector_USB:USB_A_Wuerth_61400826021_Horizontal_Stacked")
     )
     (path "/ab8d1bc3-acc1-4b48-9e8a-6839844f4523/317aa8a9-7c6f-4550-9a87-8431aab443ab"
       (reference "J8") (unit 1) (value "USB_B") (footprint "Connector_USB:USB_B_OST_USB-B1HSxx_Horizontal")
     )
     (path "/ab8d1bc3-acc1-4b48-9e8a-6839844f4523/9db0285b-d306-4118-9851-e7844e8f5db2"
-      (reference "J9") (unit 1) (value "USB_A") (footprint "Connector_USB:USB_A_CONNFLY_DS1095-WNR0")
+      (reference "J9") (unit 1) (value "USB_A") (footprint "Connector_USB:USB_A_Wuerth_614004134726_Horizontal")
     )
     (path "/ab8d1bc3-acc1-4b48-9e8a-6839844f4523/f4ce2ca1-acc6-433c-92ff-e3faf063b44c"
-      (reference "J10") (unit 1) (value "USB_A") (footprint "Connector_USB:USB_A_CONNFLY_DS1095-WNR0")
+      (reference "J10") (unit 1) (value "USB_A") (footprint "Connector_USB:USB_A_Wuerth_614004134726_Horizontal")
     )
     (path "/ca613430-cf68-48b4-8830-15e23765d7e2/c2d85168-1f5d-4d8d-9c20-3341db176926"
       (reference "J11") (unit 1) (value "C65114") (footprint "Connector_PinHeader_2.54mm:PinHeader_2x03_P2.54mm_Vertical")
