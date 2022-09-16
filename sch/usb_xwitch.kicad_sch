@@ -190,7 +190,6 @@
   (no_connect (at 133.35 102.87) (uuid 017d6290-65e5-41b9-948f-50681811f6f9))
   (no_connect (at 177.8 106.68) (uuid 3b62492a-87dc-4e6f-8882-bc06bfa1387b))
   (no_connect (at 177.8 96.52) (uuid 4ab90d56-1ce0-4280-930e-9f2e1784e7b4))
-  (no_connect (at 177.8 114.3) (uuid 50bbb1ed-96ff-4c73-9959-4374fcb8256b))
   (no_connect (at 177.8 85.09) (uuid 58ca0640-9e02-42ab-b6b9-41c384b86385))
   (no_connect (at 177.8 87.63) (uuid 58ca0640-9e02-42ab-b6b9-41c384b86386))
   (no_connect (at 133.35 105.41) (uuid 66efafdf-1033-48dd-a60f-80751b8f4e6a))
@@ -359,7 +358,7 @@
     (stroke (width 0) (type default) (color 0 0 0 0))
     (uuid 880feb97-2f9f-4c79-b33b-8bb7ced1d428)
   )
-  (wire (pts (xy 175.26 114.3) (xy 177.8 114.3))
+  (wire (pts (xy 175.26 114.3) (xy 195.58 114.3))
     (stroke (width 0) (type default) (color 0 0 0 0))
     (uuid 8971fe65-25a7-4487-bbd3-e9de5e3b2fb1)
   )
@@ -942,6 +941,10 @@
       (effects (font (size 1.27 1.27)) (justify right))
       (uuid 2d07c119-946f-4147-b6ee-123f75df7e1e)
     )
+    (pin "RST" input (at 195.58 114.3 180)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid 6cec51fd-ef10-4b9c-a874-a580664dc6ea)
+    )
   )
 
   (sheet (at 83.82 105.41) (size 25.4 24.13) (fields_autoplaced)
@@ -1511,7 +1514,7 @@
       (reference "C33") (unit 1) (value "100u") (footprint "Capacitor_SMD:CP_Elec_5x5.4")
     )
     (path "/ab8d1bc3-acc1-4b48-9e8a-6839844f4523/6f1faafd-2463-4798-8d9a-76146b9e4d29"
-      (reference "C34") (unit 1) (value "100n") (footprint "Resistor_SMD:R_0402_1005Metric_Pad0.72x0.64mm_HandSolder")
+      (reference "C34") (unit 1) (value "DNP") (footprint "Resistor_SMD:R_0402_1005Metric_Pad0.72x0.64mm_HandSolder")
     )
     (path "/ab8d1bc3-acc1-4b48-9e8a-6839844f4523/281e3edd-fad9-4705-b188-60fe733b901f"
       (reference "C35") (unit 1) (value "27p") (footprint "Capacitor_SMD:C_0402_1005Metric_Pad0.74x0.62mm_HandSolder")
@@ -1650,6 +1653,9 @@
     )
     (path "/c1fd4a19-4f0b-4bb0-a205-40545b940102/501e874d-244d-4bae-84cb-aa9ff14c2f56"
       (reference "Q1") (unit 1) (value "2N7002P") (footprint "Package_TO_SOT_SMD:SOT-23")
+    )
+    (path "/ab8d1bc3-acc1-4b48-9e8a-6839844f4523/b0f0b4e9-9494-45ff-a829-d011fd3814cd"
+      (reference "Q2") (unit 1) (value "2N7002P") (footprint "Package_TO_SOT_SMD:SOT-23")
     )
     (path "/71a687af-7ac4-4373-9578-b04c8798d7c9/26484db2-38c0-4cf4-99c4-a69187b5bbdf"
       (reference "R1") (unit 1) (value "27.4R") (footprint "Resistor_SMD:R_0402_1005Metric_Pad0.72x0.64mm_HandSolder")
