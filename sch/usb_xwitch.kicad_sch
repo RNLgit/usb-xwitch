@@ -1727,7 +1727,7 @@
       (reference "R30") (unit 1) (value "100K") (footprint "Resistor_SMD:R_0402_1005Metric_Pad0.72x0.64mm_HandSolder")
     )
     (path "/ca613430-cf68-48b4-8830-15e23765d7e2/a131fab6-888a-4e5a-86cb-cf15f923b03c"
-      (reference "R31") (unit 1) (value "24.9k") (footprint "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder")
+      (reference "R31") (unit 1) (value "24.9k") (footprint "Resistor_SMD:R_0402_1005Metric_Pad0.72x0.64mm_HandSolder")
     )
     (path "/ca613430-cf68-48b4-8830-15e23765d7e2/226d2838-c8c1-404e-a5d0-5ef9be8d9184"
       (reference "R32") (unit 1) (value "210k") (footprint "Resistor_SMD:R_0402_1005Metric_Pad0.72x0.64mm_HandSolder")
