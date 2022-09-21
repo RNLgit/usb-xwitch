@@ -1805,7 +1805,7 @@
       (reference "U9") (unit 1) (value "NCP1117LPST33T3G") (footprint "Package_TO_SOT_SMD:SOT-223-3_TabPin2")
     )
     (path "/71a687af-7ac4-4373-9578-b04c8798d7c9/6ff0298a-f274-4b49-b887-a8bf253fd242"
-      (reference "Y1") (unit 1) (value "12MHz") (footprint "Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm_HandSoldering")
+      (reference "Y1") (unit 1) (value "12MHz") (footprint "Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm")
     )
     (path "/ab8d1bc3-acc1-4b48-9e8a-6839844f4523/1a3be216-8646-4732-99dc-fbc1042acf2e"
       (reference "Y2") (unit 1) (value "24MHz") (footprint "Crystal:Crystal_SMD_5032-2Pin_5.0x3.2mm_HandSoldering")

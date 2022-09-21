@@ -2503,7 +2503,7 @@
     (uuid 6ff0298a-f274-4b49-b887-a8bf253fd242)
     (property "Reference" "Y1" (id 0) (at 251.46 123.19 0))
     (property "Value" "12MHz" (id 1) (at 252.73 125.73 0))
-    (property "Footprint" "Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm_HandSoldering" (id 2) (at 248.92 130.81 0)
+    (property "Footprint" "Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm" (id 2) (at 248.92 130.81 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 248.92 130.81 0)
