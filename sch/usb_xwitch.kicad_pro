@@ -168,7 +168,7 @@
         0,
         1,
         0,
-        2,
+        1,
         2,
         2,
         2
@@ -259,14 +259,14 @@
       ],
       [
         0,
-        2,
+        1,
         1,
         2,
         0,
         0,
         1,
         0,
-        2,
+        1,
         2,
         2,
         2
@@ -335,7 +335,7 @@
       "no_connect_dangling": "warning",
       "pin_not_connected": "error",
       "pin_not_driven": "error",
-      "pin_to_pin": "warning",
+      "pin_to_pin": "error",
       "power_pin_not_driven": "error",
       "similar_labels": "warning",
       "unannotated": "error",
@@ -345,7 +345,9 @@
     }
   },
   "libraries": {
-    "pinned_footprint_libs": [],
+    "pinned_footprint_libs": [
+      "usb_xwitch"
+    ],
     "pinned_symbol_libs": []
   },
   "meta": {
@@ -419,8 +421,8 @@
       "model_mode": 0,
       "workbook_filename": ""
     },
-    "page_layout_descr_file": "",
-    "plot_directory": "",
+    "page_layout_descr_file": "xwitch_wks.kicad_wks",
+    "plot_directory": "../rel/",
     "spice_adjust_passive_values": false,
     "spice_external_command": "spice \"%I\"",
     "subpart_first_id": 65,
@@ -430,6 +432,22 @@
     [
       "a45b4019-87d6-4731-8ca4-b4159315139b",
       ""
+    ],
+    [
+      "71a687af-7ac4-4373-9578-b04c8798d7c9",
+      "xwitch_controller"
+    ],
+    [
+      "c1fd4a19-4f0b-4bb0-a205-40545b940102",
+      "usb3_switch"
+    ],
+    [
+      "ab8d1bc3-acc1-4b48-9e8a-6839844f4523",
+      "usb2_hub"
+    ],
+    [
+      "ca613430-cf68-48b4-8830-15e23765d7e2",
+      "power_and_io"
     ]
   ],
   "text_variables": {}
