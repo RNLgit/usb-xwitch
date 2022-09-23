@@ -1585,6 +1585,9 @@
     (path "/71a687af-7ac4-4373-9578-b04c8798d7c9/5c1af89e-9217-40c2-9e2e-d6deb8e39e5e"
       (reference "J1") (unit 1) (value "USB_B_Micro") (footprint "Connector_USB:USB_Micro-B_Molex-105017-0001")
     )
+    (path "/ca613430-cf68-48b4-8830-15e23765d7e2/81cd4e97-6c50-481b-9473-373e5b62f9f1"
+      (reference "J2") (unit 1) (value "Barrel_Jack_Switch_Pin3Ring") (footprint "usb_xwitch:BarrelJack_SCD556DCS113BM3G")
+    )
     (path "/c1fd4a19-4f0b-4bb0-a205-40545b940102/66c0dad6-470a-46ed-a411-7fee31c10d62"
       (reference "J3") (unit 1) (value "USB3_A") (footprint "usb_xwitch:USB3_A_AdamTech_USB-A3-S-RA")
     )
