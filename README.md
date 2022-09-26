@@ -3,10 +3,8 @@
 A programmable budget USB 1:2 multiplexer and HUB device (original name usb-xwitch). Features one 1:2 USB 3.1 switch and 4 Ch USB 2.0 remote 
 controllable HUB. Controlling via on board micro USB or by Raspberry Pi UART. 
 
-## CAD Setup (KiCad 6.0)
 
-- Open ./sch/usb_xwitch.kicad_pro -> Schematics Editor 
-- in Preferences -> Configure Path, add path name: "USB_XWITCH" and path: absolute address of the project (e.g. /Users/runnanl/src/usb-hub)
+## Features
 
 1. Channel Features
 
@@ -16,6 +14,13 @@ controllable HUB. Controlling via on board micro USB or by Raspberry Pi UART.
 
 2. Command via micro USB serial (default) or use by UART from Raspberry Pi (as a HAT)
 
+
+## CAD Setup (KiCad 6.0)
+
+- Open ./sch/usb_xwitch.kicad_pro -> Schematics Editor 
+- in Preferences -> Configure Path, add path name: "USB_XWITCH" and path: absolute address of the project (e.g. /Users/runnanl/src/usb-hub)
+
+
 ## Hardware Overview
 
 ![HardwareOverview (to be updated)](./img/usb_xwitch_pcb_v01.jpg)
@@ -24,6 +29,7 @@ controllable HUB. Controlling via on board micro USB or by Raspberry Pi UART.
 - CHH: USB2.0 HS 1x upstream USB-B to 4x downstream USB-A ports. Control via commands.
 - Raspberry Pi compaticable header (10 Pins).
 - Mountable as Raspberry Pi 2/3/4 HAT.
+
 
 ## Software Overview
 
