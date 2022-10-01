@@ -45,7 +45,7 @@
         "silk_text_upright": false,
         "zones": {
           "45_degree_only": false,
-          "min_clearance": 0.508
+          "min_clearance": 0.19999999999999998
         }
       },
       "diff_pair_dimensions": [
@@ -494,10 +494,8 @@
           "GND",
           "Net-(C17-Pad1)",
           "Net-(C32-Pad1)",
-          "Net-(C35-Pad1)",
           "Net-(C37-Pad1)",
           "Net-(C38-Pad1)",
-          "Net-(C39-Pad1)",
           "Net-(C41-Pad1)",
           "Net-(C41-Pad2)",
           "Net-(C44-Pad1)",
