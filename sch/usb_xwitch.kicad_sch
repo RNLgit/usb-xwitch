@@ -1792,9 +1792,6 @@
     (path "/ca613430-cf68-48b4-8830-15e23765d7e2/25219a4c-8648-4181-b13a-08b6927bc8bd"
       (reference "TP6") (unit 1) (value "TestPoint") (footprint "TestPoint:TestPoint_Pad_D1.0mm")
     )
-    (path "/71a687af-7ac4-4373-9578-b04c8798d7c9/5638e402-4222-431d-86f0-8ebe21cc5b0d"
-      (reference "TP7") (unit 1) (value "TestPoint") (footprint "TestPoint:TestPoint_Pad_D1.0mm")
-    )
     (path "/71a687af-7ac4-4373-9578-b04c8798d7c9/87e0c6ed-ee4b-4394-9aaa-53f09928213a"
       (reference "U2") (unit 1) (value "W25Q64JVSSIQ") (footprint "Package_SO:SOIC-8_5.23x5.23mm_P1.27mm")
     )
