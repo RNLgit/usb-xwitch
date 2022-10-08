@@ -1,50 +1,55 @@
 from machine import Pin, ADC
 
-__version__ = '0.1'
+__version__ = '0.2'
 
 HIGH = 1
 LOW = 0
 
-PICO_LED = 25  # Pico board default led
-PD_A = 10  # CHA power down enable MUX IC
-SEL_A = 11  # CHA MUX selection pin
-REL_A = 12  # CHA USB VBus relay pin
-SW_A = 13  # CHA push button switch
-REL_B = 21  # CHB USB VBus relay pin (upper side)
-REL_C = 20  # CHC USB VBus relay pin (left side)
+IND_LED = 25  # Indicator LED, Using same pin as Pico board default led
+# Switch Pins
+PD_U2 = 8  # PD (power down) USB2 Mux pin
+SEL_U2 = 9  # SEL (selection) USB2 Mux pin
+PD_U3 = 10  # PD (power down) USB3 Mux pin
+SEL_U3 = 11  # SEL (selection) USB3 Mux pin
+SW_REL = 19  # Switch channel power switching pin
+SW_MAN = 7  # Manual channel switch pin
+# HUB Pins
+HUB_RST = 18  # HUB IC RESETn control
+HUB_SCL = 17
+HUB_SDA = 16
+# Comms
+UART_U_TX = 0  # UART upstream tx
+UART_U_RX = 1  # UART upstream rx
+UART_D_TX = 4  # UART downstream tx
+UART_D_RX = 5  # UART downstream rx
+# ADC Pins
 ADC_1_1 = 26  # CHA mus 2-1 VBus voltage
 ADC_1_2 = 27  # CHA mus 2-2 VBus voltage
-
+# Conversion
 ADC_RATIO = 18/33  # ADC voltage divider ratio
 ADC_REF_V = 3.3  # ADC reference voltage
 
-led_pico_stat = False
+led_ind_stat = False
 
 
 def _intr_flip_pico_led(pin) -> None:
-    cha_cur = get_cha_pos()
-    if cha_cur == 1:
-        set_cha_pos(2)
-    elif cha_cur == 2:
-        set_cha_pos(1)
-    else:
-        raise ValueError(f'channel A invalid position:{cha_cur}')
+    pass
 
 
-def pico_led(en: bool) -> None:
+def ind_led(en: bool) -> None:
     """
     toggle on off of pico onboard led
     """
-    _led_pico.value(en)
+    _led_ind.value(en)
 
 
 def flip_pico_led() -> None:
     """
     flip pico onboard led status
     """
-    global led_pico_stat
-    led_pico_stat = not led_pico_stat
-    pico_led(led_pico_stat)
+    global led_ind_stat
+    led_ind_stat = not led_ind_stat
+    ind_led(led_ind_stat)
 
 
 def get_adc(no: int) -> float:
@@ -57,66 +62,59 @@ def get_adc(no: int) -> float:
     return adc.get(no).read_u16() * ADC_REF_V / 65536 / ADC_RATIO
 
 
-def set_cha_pos(ch_no: int) -> None:
+def set_switch(ch_no: int) -> None:
     """
-    set cha (with mux ic channel) switch position. switch to 1 or 2
+    set usb switch position. switch to 1 or 2
     """
     if ch_no not in [1, 2]:
         raise ValueError(f'cannot switch cha to port {ch_no}. Only 2 channels supported')
-    _cha_sel.value(ch_no - 1)
-    _cha_rel.value(ch_no - 1)
+    _sw2_sel.value(ch_no - 1)
+    _sw3_sel.value(ch_no - 1)
+    _sw_rel.value(ch_no - 1)
 
 
-def get_cha_pos() -> int:
+def get_switch() -> int:
     """
-    get current cha switch position. Expect 1 or 2.
+    get current usb switch position. Expect 1 or 2.
     """
-    sel, rel = _cha_sel.value(), _cha_rel.value()
-    if sel ^ rel:  # if not all 0 or all 1
+    sel2, sel3, rel = _sw2_sel.value(), _sw3_sel.value(), _sw_rel.value()
+    if sel2 ^ sel3 ^ rel:  # if not all 0 or all 1
         raise ValueError(f'internal error. IC selection and Relay selection not match. sel:{sel}, rel:{rel}')
-    return sel + 1
+    return sel3 + 1
 
 
-def set_chb(on_off: bool) -> None:
+def set_hub(channel: int, on_off: bool) -> None:
     """
-    set channel B power on / off
+    set usb hub channel
     """
-    _chb_rel.value(on_off)
+    pass
 
 
-def get_chb() -> bool:
+def get_hub() -> bool:
     """
-    get bool stat of channel B VBus power
+    get usb hub current channels status
     """
-    return bool(_chb_rel.value())
-
-
-def set_chc(on_off: bool) -> None:
-    """
-    set channel C power on / off
-    """
-    _chc_rel.value(on_off)
-
-
-def get_chc() -> bool:
-    """
-    get bool stat of channel C VBus power
-    """
-    return bool(_chc_rel.value())
+    pass
 
 
 def version():
     return f'usb-xwitch ver:{__version__}'
 
 
-_led_pico = Pin(PICO_LED, Pin.OUT)
+_led_ind = Pin(IND_LED, Pin.OUT)
 _adc_a1 = ADC(ADC_1_1)
 _adc_a2 = ADC(ADC_1_2)
-_swa = Pin(SW_A, Pin.IN, Pin.PULL_UP)
-_swa.irq(trigger=Pin.IRQ_FALLING, handler=_intr_flip_pico_led)
-_cha_pd = Pin(PD_A, Pin.OUT)
-_cha_pd.value(LOW)
-_cha_sel = Pin(SEL_A, Pin.OUT)
-_cha_rel = Pin(REL_A, Pin.OUT)
-_chb_rel = Pin(REL_B, Pin.OUT)
-_chc_rel = Pin(REL_C, Pin.OUT)
+# switch ICs pin power up pre-condition
+_sw2_pd = Pin(PD_U2, Pin.OUT)
+_sw2_pd.value(LOW)
+_sw2_sel = Pin(SEL_U2, Pin.OUT)
+_sw3_pd = Pin(PD_U3, Pin.OUT)
+_sw3_pd.value(LOW)
+_sw3_sel = Pin(SEL_U3, Pin.OUT)
+_sw_rel = Pin(SW_REL, Pin.OUT)
+# switch manual button control pre-condition
+_sw_man = Pin(SW_MAN, Pin.IN, Pin.PULL_UP)
+_sw_man.irq(trigger=Pin.IRQ_FALLING, handler=_intr_flip_pico_led)
+# HUB IC pin pre-condition
+_hub_rst = Pin(HUB_RST, Pin.OUT)
+_hub_rst.value(LOW)
