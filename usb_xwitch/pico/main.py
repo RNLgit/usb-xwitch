@@ -1,4 +1,4 @@
-from machine import Pin, ADC
+from machine import Pin, ADC, UART
 
 __version__ = '0.2'
 
@@ -22,6 +22,7 @@ UART_U_TX = 0  # UART upstream tx
 UART_U_RX = 1  # UART upstream rx
 UART_D_TX = 4  # UART downstream tx
 UART_D_RX = 5  # UART downstream rx
+UART_BAUD = 9600  # UART default baud rate
 # ADC Pins
 ADC_1_1 = 26  # CHA mus 2-1 VBus voltage
 ADC_1_2 = 27  # CHA mus 2-2 VBus voltage
@@ -43,9 +44,9 @@ def ind_led(en: bool) -> None:
     _led_ind.value(en)
 
 
-def flip_pico_led() -> None:
+def flip_indicator_led() -> None:
     """
-    flip pico onboard led status
+    flip indicator led status
     """
     global led_ind_stat
     led_ind_stat = not led_ind_stat
@@ -77,10 +78,10 @@ def get_switch() -> int:
     """
     get current usb switch position. Expect 1 or 2.
     """
-    sel2, sel3, rel = _sw2_sel.value(), _sw3_sel.value(), _sw_rel.value()
-    if sel2 ^ sel3 ^ rel:  # if not all 0 or all 1
-        raise ValueError(f'internal error. IC selection and Relay selection not match. sel:{sel}, rel:{rel}')
-    return sel3 + 1
+    switch_ctrl = [_sw2_sel.value(), _sw3_sel.value(), _sw_rel.value()]
+    if len(set(switch_ctrl)) > 0:  # if not all 0 or all 1
+        raise ValueError(f'internal error. ICs selection or Relay selection error. sel_2, sel_3, rel: {switch_ctrl}')
+    return switch_ctrl[1] + 1  # return any value from switch list
 
 
 def set_hub(channel: int, on_off: bool) -> None:
@@ -95,6 +96,15 @@ def get_hub() -> bool:
     get usb hub current channels status
     """
     pass
+
+
+class UARTController(object):
+    def __init__(self, tx_upstream: int, rx_upstream: int, tx_downstream: int, rx_downstream: int, baudrate=UART_BAUD):
+        self.uart_us = UART(0, baudrate=baudrate, tx=Pin(tx_upstream), rx=Pin(rx_upstream))
+        self.uart_ds = UART(1, baudrate=baudrate, tx=Pin(tx_downstream), rx=Pin(rx_downstream))
+
+    def uart_send_upstream(self, data: str) -> bool:
+        self.uart_us.write()
 
 
 def version():
@@ -118,3 +128,5 @@ _sw_man.irq(trigger=Pin.IRQ_FALLING, handler=_intr_flip_pico_led)
 # HUB IC pin pre-condition
 _hub_rst = Pin(HUB_RST, Pin.OUT)
 _hub_rst.value(LOW)
+# Daisy chain UART set up
+_uart = UARTController(UART_U_TX, UART_U_RX, UART_D_TX, UART_D_RX)
