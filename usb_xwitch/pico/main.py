@@ -1,4 +1,6 @@
 from machine import Pin, ADC, UART
+from collections import deque
+import _thread
 
 __version__ = '0.2'
 
@@ -29,6 +31,9 @@ ADC_1_2 = 27  # CHA mus 2-2 VBus voltage
 # Conversion
 ADC_RATIO = 18/33  # ADC voltage divider ratio
 ADC_REF_V = 3.3  # ADC reference voltage
+# Software params
+Q_LEN = 10
+DATA_SIZE = 20  # data payload read size
 
 led_ind_stat = False
 
@@ -100,11 +105,30 @@ def get_hub() -> bool:
 
 class UARTController(object):
     def __init__(self, tx_upstream: int, rx_upstream: int, tx_downstream: int, rx_downstream: int, baudrate=UART_BAUD):
+        self.q_us = deque((), Q_LEN)
         self.uart_us = UART(0, baudrate=baudrate, tx=Pin(tx_upstream), rx=Pin(rx_upstream))
+        self.q_ds = deque((), Q_LEN)
         self.uart_ds = UART(1, baudrate=baudrate, tx=Pin(tx_downstream), rx=Pin(rx_downstream))
+        self.rx_flag = True
+        self.q_lock = _thread.allocate_lock()
+        _thread.start_new_thread(self.rx_thread, ())
 
-    def uart_send_upstream(self, data: str) -> bool:
-        self.uart_us.write()
+    def send_upstream(self, data: str) -> int:
+        return self.uart_us.write(data)
+
+    def send_downstream(self, data: str) -> int:
+        return self.uart_ds.write(data)
+
+    def rx_thread(self):
+        while self.rx_flag:
+            if self.uart_us.any() > 0:  # if there's any data in rx thread
+                self.q_lock.acquire()
+                self.q_us.append(self.uart_us.read(DATA_SIZE))
+                self.q_lock.release()
+            if self.uart_ds.any() > 0:
+                self.q_lock.acquire()
+                self.q_ds.append(self.uart_ds.read(DATA_SIZE))
+                self.q_lock.release()
 
 
 def version():
