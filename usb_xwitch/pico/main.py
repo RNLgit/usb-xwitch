@@ -1,3 +1,6 @@
+from operator import le
+import re
+from turtle import st
 from machine import Pin, ADC, UART
 from collections import deque
 import _thread
@@ -104,6 +107,8 @@ def get_hub() -> bool:
 
 
 class UARTController(object):
+    CRC_KEY = '1101'  # polynomial x^3 + x^2 + x^0
+
     def __init__(self, tx_upstream: int, rx_upstream: int, tx_downstream: int, rx_downstream: int, baudrate=UART_BAUD):
         self.q_us = deque((), Q_LEN)
         self.uart_us = UART(0, baudrate=baudrate, tx=Pin(tx_upstream), rx=Pin(rx_upstream))
@@ -112,6 +117,25 @@ class UARTController(object):
         self.rx_flag = True
         self.q_lock = _thread.allocate_lock()
         _thread.start_new_thread(self.rx_thread, ())
+    
+    def _get_crc_field(bit_str: str, poly_str: str, init_filter_str='0') -> str:
+        poly_str = poly_str.lstrip('0')
+        initial_pad = (len(poly_str) - 1) * init_filter_str
+        input_pad_arr = list(bit_str + initial_pad)
+        while '1' in input_pad_arr[:len(bit_str)]:
+            cur_shift = input_pad_arr.index('1')
+            for i in range(len(poly_str)):
+                input_pad_arr[cur_shift + i] = str(int(poly_str[i] != input_pad_arr[cur_shift + i]))
+        return ''.join(input_pad_arr)[len(bit_str):]
+    
+    def _check_crc(bit_str: str, poly_str: str, crc_value: str):
+        poly_str = poly_str.lstrip('0')
+        input_pad_arr = list(bit_str + crc_value)
+        while '1' in input_pad_arr[:len(bit_str)]:
+            cur_shift = input_pad_arr.index('1')
+            for i in range(len(poly_str)):
+                input_pad_arr[cur_shift + i] = str(int(poly_str[i] != input_pad_arr[cur_shift + i]))
+        return ('1' not in ''.join(input_pad_arr)[len(bit_str):])
 
     def send_upstream(self, data: str) -> int:
         return self.uart_us.write(data)
