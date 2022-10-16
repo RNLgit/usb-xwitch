@@ -1,6 +1,5 @@
-from operator import le
-import re
-from turtle import st
+from os import stat
+from platform import machine
 from machine import Pin, ADC, UART
 from collections import deque
 import _thread
@@ -28,6 +27,7 @@ UART_U_RX = 1  # UART upstream rx
 UART_D_TX = 4  # UART downstream tx
 UART_D_RX = 5  # UART downstream rx
 UART_BAUD = 9600  # UART default baud rate
+HUB_ADDR = 0x2C  # HUB SMBus slave address
 # ADC Pins
 ADC_1_1 = 26  # CHA mus 2-1 VBus voltage
 ADC_1_2 = 27  # CHA mus 2-2 VBus voltage
@@ -106,6 +106,20 @@ def get_hub() -> bool:
     pass
 
 
+class HUBI2C(object):
+    def __init__(self, scl_pin=HUB_SCL, sda_pin=HUB_SDA) -> None:
+        self.i2c = machine.I2C(0, scl=machine.Pin(scl_pin), sda=machine.Pin(sda_pin), freq=60000)
+
+    def _reg_write(self, addr, register, data):
+        msg = bytearray()
+        msg.append(data)
+        self.i2c.writeto_mem(addrm register, msg)
+    
+    def _reg_read(self, addr, register, nbytes=1):
+        pass
+
+
+
 class UARTController(object):
     CRC_KEY = '1101'  # polynomial x^3 + x^2 + x^0
 
@@ -117,7 +131,8 @@ class UARTController(object):
         self.rx_flag = True
         self.q_lock = _thread.allocate_lock()
         _thread.start_new_thread(self.rx_thread, ())
-    
+ 
+    @staticmethod
     def _get_crc_field(bit_str: str, poly_str: str, init_filter_str='0') -> str:
         poly_str = poly_str.lstrip('0')
         initial_pad = (len(poly_str) - 1) * init_filter_str
@@ -128,6 +143,7 @@ class UARTController(object):
                 input_pad_arr[cur_shift + i] = str(int(poly_str[i] != input_pad_arr[cur_shift + i]))
         return ''.join(input_pad_arr)[len(bit_str):]
     
+    @staticmethod
     def _check_crc(bit_str: str, poly_str: str, crc_value: str):
         poly_str = poly_str.lstrip('0')
         input_pad_arr = list(bit_str + crc_value)
@@ -135,7 +151,7 @@ class UARTController(object):
             cur_shift = input_pad_arr.index('1')
             for i in range(len(poly_str)):
                 input_pad_arr[cur_shift + i] = str(int(poly_str[i] != input_pad_arr[cur_shift + i]))
-        return ('1' not in ''.join(input_pad_arr)[len(bit_str):])
+        return '1' not in ''.join(input_pad_arr)[len(bit_str):]
 
     def send_upstream(self, data: str) -> int:
         return self.uart_us.write(data)
@@ -155,7 +171,7 @@ class UARTController(object):
                 self.q_lock.release()
 
 
-def version():
+def version() -> str:
     return f'usb-xwitch ver:{__version__}'
 
 
