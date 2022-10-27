@@ -113,11 +113,12 @@ class HUBI2C(object):
     def _reg_write(self, addr, register, data):
         msg = bytearray()
         msg.append(data)
-        self.i2c.writeto_mem(addrm register, msg)
-    
-    def _reg_read(self, addr, register, nbytes=1):
-        pass
+        self.i2c.writeto_mem(addr, register, msg)
 
+    def _reg_read(self, addr, register, nbytes=1):
+        if nbytes < 1:
+            return bytearray()
+        return self.i2c.readfrom_mem(addr, register, nbytes)
 
 
 class UARTController(object):
