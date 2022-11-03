@@ -1,5 +1,3 @@
-from os import stat
-from platform import machine
 from machine import Pin, ADC, UART
 from collections import deque
 import _thread
@@ -94,7 +92,7 @@ def get_switch() -> int:
 
 def set_hub(channel: int, on_off: bool) -> None:
     """
-    set usb hub channel
+    set usb hub channes
     """
     pass
 
@@ -107,8 +105,14 @@ def get_hub() -> bool:
 
 
 class HUBI2C(object):
-    def __init__(self, scl_pin=HUB_SCL, sda_pin=HUB_SDA) -> None:
-        self.i2c = machine.I2C(0, scl=machine.Pin(scl_pin), sda=machine.Pin(sda_pin), freq=60000)
+    """
+    USB HUB control
+    """
+    def __init__(self, scl_pin=HUB_SCL, sda_pin=HUB_SDA, frequency=60000) -> None:
+        self.i2c = machine.I2C(0, scl=machine.Pin(scl_pin), sda=machine.Pin(sda_pin), freq=frequency)
+    
+    def _block_read(self, reg_addr):
+        pass
 
     def _reg_write(self, addr, register, data):
         msg = bytearray()
