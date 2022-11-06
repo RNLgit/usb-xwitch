@@ -85,7 +85,7 @@ def get_switch() -> int:
     get current usb switch position. Expect 1 or 2.
     """
     switch_ctrl = [_sw2_sel.value(), _sw3_sel.value(), _sw_rel.value()]
-    if len(set(switch_ctrl)) > 0:  # if not all 0 or all 1
+    if len(set(switch_ctrl)) > 1:  # if not all 0 or all 1
         raise ValueError(f'internal error. ICs selection or Relay selection error. sel_2, sel_3, rel: {switch_ctrl}')
     return switch_ctrl[1] + 1  # return any value from switch list
 
