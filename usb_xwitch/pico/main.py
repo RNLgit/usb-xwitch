@@ -1,4 +1,5 @@
-from machine import Pin, ADC, UART
+from machine import Pin, ADC, UART, I2C
+from conf import HUBAddr
 from collections import deque
 import _thread
 
@@ -108,11 +109,18 @@ class HUBI2C(object):
     """
     USB HUB control
     """
-    def __init__(self, scl_pin=HUB_SCL, sda_pin=HUB_SDA, frequency=60000) -> None:
-        self.i2c = machine.I2C(0, scl=machine.Pin(scl_pin), sda=machine.Pin(sda_pin), freq=frequency)
-    
-    def _block_read(self, reg_addr):
-        pass
+    MAX_BLOCK = 32  # max block read / write size for USB2514B
+
+    def __init__(self, scl_pin=HUB_SCL, sda_pin=HUB_SDA, frequency=400000) -> None:
+        self.i2c = I2C(0, scl=Pin(scl_pin), sda=Pin(sda_pin), freq=frequency)
+
+    def _block_read(self, reg_addr: int):
+        buffer = bytearray(2)
+        buffer[0] = reg_addr
+        buffer[1] = HUBAddr.SLAVE
+        ack = self.i2c.writeto(HUBAddr.SLAVE, buffer)
+        raw_data = self.i2c.readfrom(HUBAddr.SLAVE, 3)  ##
+        return raw_data
 
     def _reg_write(self, addr, register, data):
         msg = bytearray()
