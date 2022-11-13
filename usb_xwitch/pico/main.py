@@ -26,7 +26,6 @@ UART_U_RX = 1  # UART upstream rx
 UART_D_TX = 4  # UART downstream tx
 UART_D_RX = 5  # UART downstream rx
 UART_BAUD = 9600  # UART default baud rate
-HUB_ADDR = 0x2C  # HUB SMBus slave address
 # ADC Pins
 ADC_1_1 = 26  # CHA mus 2-1 VBus voltage
 ADC_1_2 = 27  # CHA mus 2-2 VBus voltage
@@ -114,13 +113,22 @@ class HUBI2C(object):
     def __init__(self, scl_pin=HUB_SCL, sda_pin=HUB_SDA, frequency=400000) -> None:
         self.i2c = I2C(0, scl=Pin(scl_pin), sda=Pin(sda_pin), freq=frequency)
 
-    def _block_read(self, reg_addr: int):
-        buffer = bytearray(2)
-        buffer[0] = reg_addr
-        buffer[1] = HUBAddr.SLAVE
-        ack = self.i2c.writeto(HUBAddr.SLAVE, buffer)
-        raw_data = self.i2c.readfrom(HUBAddr.SLAVE, 3)  ##
-        return raw_data
+    def _br(self, reg_addr: int, byte_ct=33) -> bytearray:
+        """
+        Block read. byte_ct max 33 (i.e. ct + max 32 bytes data)
+        """
+        buf_reg = bytes([reg_addr])
+        self.i2c.writeto(HUBAddr.SLAVE, buf_reg, False)
+        return self.i2c.readfrom(HUBAddr.SLAVE, byte_ct)
+
+    def _bw(self, reg_addr: int, bytes2write: list) -> None:
+        """
+        Block write
+        """
+        data = [reg_addr, len(bytes2write)]
+        data.extend(bytes2write)
+        bw_data = bytes(data)
+        self.i2c.writeto(HUBAddr.SLAVE, bw_data)
 
     def _reg_write(self, addr, register, data):
         msg = bytearray()

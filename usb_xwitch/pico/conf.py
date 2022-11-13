@@ -40,3 +40,8 @@ class HUBAddr(object):
     PORT_MAP_12 = RegAddr("PORT_MAP_12", 0xFB, 0x00)
     PORT_MAP_34 = RegAddr("PORT_MAP_34", 0xFC, 0x00)
     STAT_CMD = RegAddr("STAT_CMD", 0XFF, 0x00)  # Status / Command (SMBus only)
+
+    # Default Load List
+    INIT_DEF = [VENDOR_ID_LSB, VENDOR_ID_MSB, PRODUCT_ID_LSB, PRODUCT_ID_MSB, DEVICE_ID_LSB, 
+                DEVICE_ID_MSB, CONFIG_DATA_B1, CONFIG_DATA_B2, CONFIG_DATA_B3, MAX_POWER_BUS,
+                MAX_POWER_BUS]
