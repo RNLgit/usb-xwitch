@@ -112,6 +112,14 @@ class HUBI2C(object):
 
     def __init__(self, scl_pin=HUB_SCL, sda_pin=HUB_SDA, frequency=400000) -> None:
         self.i2c = I2C(0, scl=Pin(scl_pin), sda=Pin(sda_pin), freq=frequency)
+        self._init_hub()
+    
+    def _init_hub(self):
+        """
+        Configure hub default values. t5 stage in SMBus.
+        """
+        for reg2init in HUBAddr.INIT_DEFAULT:
+            self._bw(reg2init.addr, [reg2init.default_val])
 
     def _br(self, reg_addr: int, byte_ct=33) -> bytearray:
         """
