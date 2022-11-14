@@ -120,6 +120,8 @@ class HUBI2C(object):
         """
         for reg2init in HUBAddr.INIT_DEFAULT:
             self._bw(reg2init.addr, [reg2init.default_val])
+        for mfg in HUBAddr.MFG_DEFAULT:
+            self._bw_lot(mfg.addr, mfg.default_val)
 
     def _br(self, reg_addr: int, byte_ct=33) -> bytearray:
         """
@@ -137,6 +139,17 @@ class HUBI2C(object):
         data.extend(bytes2write)
         bw_data = bytes(data)
         self.i2c.writeto(HUBAddr.SLAVE, bw_data)
+ 
+    def _bw_lot(self, ref_addr: list, bytes2write: list) -> None:
+        """
+        Block write a lot longer than expected
+        """
+        if len(bytes2write) > 32:
+            chunks = [bytes2write[i : i+32] for i in range(0, len(bytes2write), 32)]
+            for idx in range(len(chunks)):
+                self._bw(ref_addr[idx], chunks[idx])
+        else:
+            self._bw(ref_addr[0], bytes2write)  # Blindly take 1st 
 
     def _reg_write(self, addr, register, data):
         msg = bytearray()
@@ -223,3 +236,4 @@ _hub_rst = Pin(HUB_RST, Pin.OUT)
 _hub_rst.value(LOW)
 # Daisy chain UART set up
 _uart = UARTController(UART_U_TX, UART_U_RX, UART_D_TX, UART_D_RX)
+# _hub = HUBI2C()
