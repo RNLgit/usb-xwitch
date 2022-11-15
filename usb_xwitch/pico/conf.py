@@ -60,3 +60,36 @@ class HUBAddr(object):
                     MAX_POWER_BUS, BATT_CHG_EN]
     MFG_AUX_DEFAULT = [MFG_STR_LEN, PDT_STR_LEN, SN_STR_LEN, LANG_ID_HIGH, LANG_ID_LOW]
     MFG_DEFAULT = [MFG_STR, PDT_STR, SN_STR]
+
+
+class HW(object):
+    HIGH = 1
+    LOW = 0
+
+    IND_LED = 25  # Indicator LED, Using same pin as Pico board default led
+    # Switch Pins
+    PD_U2 = 8  # PD (power down) USB2 Mux pin
+    SEL_U2 = 9  # SEL (selection) USB2 Mux pin
+    PD_U3 = 10  # PD (power down) USB3 Mux pin
+    SEL_U3 = 11  # SEL (selection) USB3 Mux pin
+    SW_REL = 19  # Switch channel power switching pin
+    SW_MAN = 7  # Manual channel switch pin
+    # HUB Pins
+    HUB_RST = 18  # HUB IC RESETn control
+    HUB_SCL = 17
+    HUB_SDA = 16
+    # Comms
+    UART_U_TX = 0  # UART upstream tx
+    UART_U_RX = 1  # UART upstream rx
+    UART_D_TX = 4  # UART downstream tx
+    UART_D_RX = 5  # UART downstream rx
+    UART_BAUD = 9600  # UART default baud rate
+    # ADC Pins
+    ADC_1_1 = 26  # CHA mus 2-1 VBus voltage
+    ADC_1_2 = 27  # CHA mus 2-2 VBus voltage
+    # Conversion
+    ADC_RATIO = 18/33  # ADC voltage divider ratio
+    ADC_REF_V = 3.3  # ADC reference voltage
+    # Software params
+    Q_LEN = 10
+    DATA_SIZE = 20  # data payload read size

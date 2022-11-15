@@ -1,47 +1,23 @@
 from machine import Pin, ADC, UART, I2C
-from conf import HUBAddr
+from conf import HUBAddr, HW
 import time
 from collections import deque
 import _thread
 
-__version__ = '0.2'
-
-HIGH = 1
-LOW = 0
-
-IND_LED = 25  # Indicator LED, Using same pin as Pico board default led
-# Switch Pins
-PD_U2 = 8  # PD (power down) USB2 Mux pin
-SEL_U2 = 9  # SEL (selection) USB2 Mux pin
-PD_U3 = 10  # PD (power down) USB3 Mux pin
-SEL_U3 = 11  # SEL (selection) USB3 Mux pin
-SW_REL = 19  # Switch channel power switching pin
-SW_MAN = 7  # Manual channel switch pin
-# HUB Pins
-HUB_RST = 18  # HUB IC RESETn control
-HUB_SCL = 17
-HUB_SDA = 16
-# Comms
-UART_U_TX = 0  # UART upstream tx
-UART_U_RX = 1  # UART upstream rx
-UART_D_TX = 4  # UART downstream tx
-UART_D_RX = 5  # UART downstream rx
-UART_BAUD = 9600  # UART default baud rate
-# ADC Pins
-ADC_1_1 = 26  # CHA mus 2-1 VBus voltage
-ADC_1_2 = 27  # CHA mus 2-2 VBus voltage
-# Conversion
-ADC_RATIO = 18/33  # ADC voltage divider ratio
-ADC_REF_V = 3.3  # ADC reference voltage
-# Software params
-Q_LEN = 10
-DATA_SIZE = 20  # data payload read size
+__pcb__ = '0.2'
+__version__ = '0.2 a1'
 
 led_ind_stat = False
 
 
-def _intr_flip_pico_led(pin) -> None:
-    pass
+def _intr_change_switch(pin) -> None:
+    cur = get_switch()
+    if cur == 1:
+        set_switch(0)
+    elif cur == 0:
+        set_switch(1)
+    else:
+        raise ValueError(f'manual channel {cur} invalid position')
 
 
 def ind_led(en: bool) -> None:
@@ -67,18 +43,18 @@ def get_adc(no: int) -> float:
     adc = {1: _adc_a1, 2: _adc_a2}
     if adc.get(no) is None:
         raise ValueError(f'adc {no} invalid')
-    return adc.get(no).read_u16() * ADC_REF_V / 65536 / ADC_RATIO
+    return adc.get(no).read_u16() * HW.ADC_REF_V / 65536 / HW.ADC_RATIO
 
 
 def set_switch(ch_no: int) -> None:
     """
-    set usb switch position. switch to 1 or 2
+    set usb switch position. switch to 0 or 1 (ch1 or ch2)
     """
-    if ch_no not in [1, 2]:
-        raise ValueError(f'cannot switch cha to port {ch_no}. Only 2 channels supported')
-    _sw2_sel.value(ch_no - 1)
-    _sw3_sel.value(ch_no - 1)
-    _sw_rel.value(ch_no - 1)
+    if ch_no not in [0, 1]:
+        raise ValueError(f'cannot switch cha to {ch_no} (ch{ch_no+1}). Only 0, 1 (2 channels) supported')
+    _sw2_sel.value(ch_no)
+    _sw3_sel.value(ch_no)
+    _sw_rel.value(ch_no)
 
 
 def get_switch() -> int:
@@ -88,7 +64,7 @@ def get_switch() -> int:
     switch_ctrl = [_sw2_sel.value(), _sw3_sel.value(), _sw_rel.value()]
     if len(set(switch_ctrl)) > 1:  # if not all 0 or all 1
         raise ValueError(f'internal error. ICs selection or Relay selection error. sel_2, sel_3, rel: {switch_ctrl}')
-    return switch_ctrl[1] + 1  # return any value from switch list
+    return switch_ctrl[1]  # return any value from switch list
 
 
 def set_hub(on_off_lst: list) -> None:
@@ -120,7 +96,7 @@ class HUBI2C(object):
     """
     MAX_BLOCK = 32  # max block read / write size for USB2514B
 
-    def __init__(self, scl_pin=HUB_SCL, sda_pin=HUB_SDA, frequency=400000) -> None:
+    def __init__(self, scl_pin=HW.HUB_SCL, sda_pin=HW.HUB_SDA, frequency=400000) -> None:
         self.i2c = I2C(0, scl=Pin(scl_pin), sda=Pin(sda_pin), freq=frequency)
         self._init_hub()
         self.attach()
@@ -174,9 +150,9 @@ class HUBI2C(object):
         """
         Reset HUB
         """
-        _hub_rst.value(HIGH)
+        _hub_rst.value(HW.HIGH)
         time.sleep(seconds)
-        _hub_rst.value(LOW)
+        _hub_rst.value(HW.LOW)
         time.sleep(seconds/2)
         self._init_hub()
 
@@ -184,10 +160,10 @@ class HUBI2C(object):
 class UARTController(object):
     CRC_KEY = '1101'  # polynomial x^3 + x^2 + x^0
 
-    def __init__(self, tx_upstream: int, rx_upstream: int, tx_downstream: int, rx_downstream: int, baudrate=UART_BAUD):
-        self.q_us = deque((), Q_LEN)
+    def __init__(self, tx_upstream: int, rx_upstream: int, tx_downstream: int, rx_downstream: int, baudrate=HW.UART_BAUD):
+        self.q_us = deque((), HW.Q_LEN)
         self.uart_us = UART(0, baudrate=baudrate, tx=Pin(tx_upstream), rx=Pin(rx_upstream))
-        self.q_ds = deque((), Q_LEN)
+        self.q_ds = deque((), HW.Q_LEN)
         self.uart_ds = UART(1, baudrate=baudrate, tx=Pin(tx_downstream), rx=Pin(rx_downstream))
         self.rx_flag = True
         self.q_lock = _thread.allocate_lock()
@@ -224,11 +200,11 @@ class UARTController(object):
         while self.rx_flag:
             if self.uart_us.any() > 0:  # if there's any data in rx thread
                 self.q_lock.acquire()
-                self.q_us.append(self.uart_us.read(DATA_SIZE))
+                self.q_us.append(self.uart_us.read(HW.DATA_SIZE))
                 self.q_lock.release()
             if self.uart_ds.any() > 0:
                 self.q_lock.acquire()
-                self.q_ds.append(self.uart_ds.read(DATA_SIZE))
+                self.q_ds.append(self.uart_ds.read(HW.DATA_SIZE))
                 self.q_lock.release()
 
 
@@ -236,23 +212,34 @@ def version() -> str:
     return f'usb-xwitch ver:{__version__}'
 
 
-_led_ind = Pin(IND_LED, Pin.OUT)
-_adc_a1 = ADC(ADC_1_1)
-_adc_a2 = ADC(ADC_1_2)
+__doc__ = f'''Functions:
+         {set_hub.__name__}(list): set hub 4 channels on/off. format: [bool, bool, bool, bool]
+         {get_hub.__name__}(): get current hub 4 channels in tuple
+         {set_switch.__name__}(int): set switch to channel 1 / 2
+         {get_switch.__name__}(): get current switch channel
+         {get_adc.__name__}(int): get current switch bus 1 / 2 volrage reading
+         {flip_indicator_led.__name__}(): flip indicator led to opposite state
+         {ind_led.__name__}(bool): bool. set indicator led status
+         '''
+
+
+_led_ind = Pin(HW.IND_LED, Pin.OUT)
+_adc_a1 = ADC(HW.ADC_1_1)
+_adc_a2 = ADC(HW.ADC_1_2)
 # switch ICs pin power up pre-condition
-_sw2_pd = Pin(PD_U2, Pin.OUT)
-_sw2_pd.value(LOW)
-_sw2_sel = Pin(SEL_U2, Pin.OUT)
-_sw3_pd = Pin(PD_U3, Pin.OUT)
-_sw3_pd.value(LOW)
-_sw3_sel = Pin(SEL_U3, Pin.OUT)
-_sw_rel = Pin(SW_REL, Pin.OUT)
+_sw2_pd = Pin(HW.PD_U2, Pin.OUT)
+_sw2_pd.value(HW.LOW)
+_sw2_sel = Pin(HW.SEL_U2, Pin.OUT)
+_sw3_pd = Pin(HW.PD_U3, Pin.OUT)
+_sw3_pd.value(HW.HIGH)  #TODO: debug USB3 comms
+_sw3_sel = Pin(HW.SEL_U3, Pin.OUT)
+_sw_rel = Pin(HW.SW_REL, Pin.OUT)
 # switch manual button control pre-condition
-_sw_man = Pin(SW_MAN, Pin.IN, Pin.PULL_UP)
-_sw_man.irq(trigger=Pin.IRQ_FALLING, handler=_intr_flip_pico_led)
+_sw_man = Pin(HW.SW_MAN, Pin.IN, Pin.PULL_UP)
+_sw_man.irq(trigger=Pin.IRQ_FALLING, handler=_intr_change_switch)
 # HUB IC pin pre-condition
-_hub_rst = Pin(HUB_RST, Pin.OUT)
-_hub_rst.value(LOW)
+_hub_rst = Pin(HW.HUB_RST, Pin.OUT)
+_hub_rst.value(HW.LOW)
 # Daisy chain UART set up
-_uart = UARTController(UART_U_TX, UART_U_RX, UART_D_TX, UART_D_RX)
+_uart = UARTController(HW.UART_U_TX, HW.UART_U_RX, HW.UART_D_TX, HW.UART_D_RX)
 _hub = HUBI2C()
