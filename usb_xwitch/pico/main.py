@@ -215,7 +215,7 @@ def version() -> str:
 __doc__ = f'''Functions:
          {set_hub.__name__}(list): set hub 4 channels on/off. format: [bool, bool, bool, bool]
          {get_hub.__name__}(): get current hub 4 channels in tuple
-         {set_switch.__name__}(int): set switch to channel 1 / 2
+         {set_switch.__name__}(int): set switch to channel 1 / 2. starting from 0
          {get_switch.__name__}(): get current switch channel
          {get_adc.__name__}(int): get current switch bus 1 / 2 volrage reading
          {flip_indicator_led.__name__}(): flip indicator led to opposite state
