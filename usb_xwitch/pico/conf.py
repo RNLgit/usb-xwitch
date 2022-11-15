@@ -3,26 +3,22 @@ from ucollections import namedtuple
 RegAddr = namedtuple("RegisterAddr", ("name", "addr", "default_val"))
 
 
-def _str2bytelst(data: str, buf_len: int) -> list:
-    lst_new = []
-    data_utf16 = data.encode('utf-16')
-    if len(data_utf16) > buf_len:
-        raise IndexError('data is longer than expected internal buffer range')
-    for i in range(len(data_utf16)):
-        lst_new.append(data_utf16[i])
-    return lst_new
-
-
 class HUBAddr(object):
     """
     USB2514 Address constants
     """
     # USB2514B I2C slave address. USB251x must transmitted MSB first
     SLAVE = 0x2C
-    DATA_MFG_STR = b'\xff\xfeB\x00l\x00a\x00c\x00k\x00m\x00a\x00g\x00i\x00c\x00 \x00D\x00e\x00s\x00i\x00g\x00n\x00 \x00Q\x00A\x00'
-    DATA_PDT_STR = b'\xff\xfeu\x00s\x00b\x00x\x00w\x00i\x00t\x00c\x00h\x00'
-    DATA_SN_STR = "BQA251420220201"
+    DATA_MFG_STR = b'B\x00M\x00D\x00-\x00Q\x00A\x00'  #TODO: utf-16le byte order
+    DATA_PDT_STR = b'u\x00s\x00b\x00-\x00x\x00w\x00i\x00t\x00c\x00h\x00'
+    DATA_SN_STR = b'B\x00Q\x00A\x002\x005\x001\x004\x002\x000\x002\x002\x000\x002\x000\x001\x00'
     HW_VER = 0.2  # only one decimal point
+
+    PORT_MSK_1 = 0x02
+    PORT_MSK_2 = 0x04
+    PORT_MSK_3 = 0x08
+    PORT_MSK_4 = 0x10
+    PORTS_MASK = [PORT_MSK_1, PORT_MSK_2, PORT_MSK_3, PORT_MSK_4]
 
     # Register Address Defaults
     VENDOR_ID_LSB = RegAddr("VENDOR_ID_LSB", 0x00, 0xDB)  # vendor ID LSB
@@ -42,15 +38,14 @@ class HUBAddr(object):
     MAX_CURR_SELF = RegAddr("MAX_CURR_SELF", 0x0E, 0x00)  # hub controller max current (self)
     MAX_CURR_BUS = RegAddr("MAX_CURR_BUS", 0x0F, 0x00)
     PWR_ON_TIME = RegAddr("PWR_ON_TIME", 0x10, 0x00)  # power on time
-    LANG_ID_HIGH = RegAddr("LANG_ID_HIGH", 0x11, 0x00)  # language ID high
-    LANG_ID_LOW = RegAddr("LANG_ID_LOW", 0x12, 0x00)  # language ID low
-    MFG_STR_LEN = RegAddr("MFG_STR_LEN", 0x13, 0x00)  # manufacturer string length
-    PDT_STR_LEN = RegAddr("PDT_STR_LEN", 0x14, 0x00)  # product string length
-    SN_STR_LEN = RegAddr("SN_STR_LEN", 0x15, 0x00)  # serial string length
-    MFG_STR = RegAddr("MFG_STR", list(range(0x16, 0x53)), [0, 66, 0, 66, 0, 66])  # manufacturer string length
-    PDT_STR = RegAddr("PDT_STR", list(range(0x54, 0x91)), list(DATA_PDT_STR))  # product string
-    SN_STR = RegAddr("SN_STR", list(range(0x92, 0xCF)), 
-                     _str2bytelst(DATA_SN_STR, (0xCF - 0x92 + 1)))  # serial string
+    LANG_ID_HIGH = RegAddr("LANG_ID_HIGH", 0x11, 0x04)  # language ID high (upper)
+    LANG_ID_LOW = RegAddr("LANG_ID_LOW", 0x12, 0x09)  # language ID low
+    MFG_STR_LEN = RegAddr("MFG_STR_LEN", 0x13, 0x0C)  # manufacturer string length
+    PDT_STR_LEN = RegAddr("PDT_STR_LEN", 0x14, 0x14)  # product string length
+    SN_STR_LEN = RegAddr("SN_STR_LEN", 0x15, 0x1E)  # serial string length
+    MFG_STR = RegAddr("MFG_STR", list(range(0x16, 0x53)), list(DATA_MFG_STR))  #TODO: manufacturer string length
+    PDT_STR = RegAddr("PDT_STR", list(range(0x54, 0x91)), list(DATA_PDT_STR))  #TODO: product string
+    SN_STR = RegAddr("SN_STR", list(range(0x92, 0xCF)), list(DATA_SN_STR))  #TODO: serial string
     BATT_CHG_EN = RegAddr("BATT_CHG_EN", 0xD0, 0x00)  # battery charging enable
     BOOST_UP = RegAddr("BOOST_UP", 0xF6, 0x00)  # boost up
     BOOST_4_0 = RegAddr("BOOST_4_0", 0xF8, 0x00)
@@ -59,14 +54,9 @@ class HUBAddr(object):
     PORT_MAP_34 = RegAddr("PORT_MAP_34", 0xFC, 0x00)
     STAT_CMD = RegAddr("STAT_CMD", 0XFF, 0x00)  # Status / Command (SMBus only)
 
-    # Configurable MFG data
-    # MFG_STR.default_val = _str2bytelst(DATA_MFG_STR, MFG_STR.default_val)
-    # PDT_STR.default_val = _str2bytelst(DATA_PDT_STR, PDT_STR.default_val)
-    # SN_STR.default_val = _str2bytelst(DATA_SN_STR, SN_STR.default_val)
-
-
     # Default Load List
     INIT_DEFAULT = [VENDOR_ID_LSB, VENDOR_ID_MSB, PRODUCT_ID_LSB, PRODUCT_ID_MSB, DEVICE_ID_LSB,
                     DEVICE_ID_MSB, CONFIG_DATA_B1, CONFIG_DATA_B2, CONFIG_DATA_B3, MAX_POWER_BUS,
-                    MAX_POWER_BUS]
-    MFG_DEFAULT = [MFG_STR, PDT_STR] #, SN_STR]
+                    MAX_POWER_BUS, BATT_CHG_EN]
+    MFG_AUX_DEFAULT = [MFG_STR_LEN, PDT_STR_LEN, SN_STR_LEN, LANG_ID_HIGH, LANG_ID_LOW]
+    MFG_DEFAULT = [MFG_STR, PDT_STR, SN_STR]

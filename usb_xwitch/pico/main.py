@@ -1,5 +1,6 @@
 from machine import Pin, ADC, UART, I2C
 from conf import HUBAddr
+import time
 from collections import deque
 import _thread
 
@@ -90,18 +91,27 @@ def get_switch() -> int:
     return switch_ctrl[1] + 1  # return any value from switch list
 
 
-def set_hub(channel: int, on_off: bool) -> None:
+def set_hub(on_off_lst: list) -> None:
     """
-    set usb hub channes
+    set usb hub channels using a list of bool values.
+    e.g. set_hub([False, True, True, False]) set hub channel 2 & 3 on and 1 & 4 off
     """
-    pass
+    if len(on_off_lst) != 4:
+        raise ValueError('on off list should be a length of 4 (channels)')
+    _hub.reset()
+    _hub._init_hub()
+    vals = [v for k, v in zip(on_off_lst, HUBAddr.PORTS_MASK) if not k]
+    _hub._bw(HUBAddr.PORT_DISABLE_SELF.addr, [sum(vals)])
+    _hub.attach()
 
 
-def get_hub() -> bool:
+def get_hub() -> tuple:
     """
-    get usb hub current channels status
+    get usb hub current channels status in tuple of bools.
     """
-    pass
+    data = _hub._br(HUBAddr.PORT_DISABLE_SELF.addr)[1]
+    return not bool(data & HUBAddr.PORT_MSK_1), not bool(data & HUBAddr.PORT_MSK_2), \
+        not bool(data & HUBAddr.PORT_MSK_3), not bool(data & HUBAddr.PORT_MSK_4)
 
 
 class HUBI2C(object):
@@ -113,12 +123,15 @@ class HUBI2C(object):
     def __init__(self, scl_pin=HUB_SCL, sda_pin=HUB_SDA, frequency=400000) -> None:
         self.i2c = I2C(0, scl=Pin(scl_pin), sda=Pin(sda_pin), freq=frequency)
         self._init_hub()
+        self.attach()
     
-    def _init_hub(self):
+    def _init_hub(self) -> None:
         """
         Configure hub default values. t5 stage in SMBus.
         """
         for reg2init in HUBAddr.INIT_DEFAULT:
+            self._bw(reg2init.addr, [reg2init.default_val])
+        for reg2init in HUBAddr.MFG_AUX_DEFAULT:
             self._bw(reg2init.addr, [reg2init.default_val])
         for mfg in HUBAddr.MFG_DEFAULT:
             self._bw_lot(mfg.addr, mfg.default_val)
@@ -139,7 +152,7 @@ class HUBI2C(object):
         data.extend(bytes2write)
         bw_data = bytes(data)
         self.i2c.writeto(HUBAddr.SLAVE, bw_data)
- 
+
     def _bw_lot(self, ref_addr: list, bytes2write: list) -> None:
         """
         Block write a lot longer than expected
@@ -150,16 +163,22 @@ class HUBI2C(object):
                 self._bw(ref_addr[idx], chunks[idx])
         else:
             self._bw(ref_addr[0], bytes2write)  # Blindly take 1st 
+   
+    def attach(self) -> None:
+        """
+        Aply hub configs and make it online
+        """
+        self._bw(HUBAddr.STAT_CMD.addr, [0x01])
 
-    def _reg_write(self, addr, register, data):
-        msg = bytearray()
-        msg.append(data)
-        self.i2c.writeto_mem(addr, register, msg)
-
-    def _reg_read(self, addr, register, nbytes=1):
-        if nbytes < 1:
-            return bytearray()
-        return self.i2c.readfrom_mem(addr, register, nbytes)
+    def reset(self, seconds=1) -> None:
+        """
+        Reset HUB
+        """
+        _hub_rst.value(HIGH)
+        time.sleep(seconds)
+        _hub_rst.value(LOW)
+        time.sleep(seconds/2)
+        self._init_hub()
 
 
 class UARTController(object):
@@ -236,4 +255,4 @@ _hub_rst = Pin(HUB_RST, Pin.OUT)
 _hub_rst.value(LOW)
 # Daisy chain UART set up
 _uart = UARTController(UART_U_TX, UART_U_RX, UART_D_TX, UART_D_RX)
-# _hub = HUBI2C()
+_hub = HUBI2C()
