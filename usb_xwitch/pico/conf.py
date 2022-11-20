@@ -93,3 +93,24 @@ class HW(object):
     # Software params
     Q_LEN = 10
     DATA_SIZE = 20  # data payload read size
+
+
+class DC(object):
+    """
+    Daisy chain parameters
+
+    Daisy chain messages. When invalid message, no response.
+    Message format:
+
+    +----------+-----------+-------------+-------------+------+
+    |  header  | Direction |    CMD      | Data Field  | EoM  |
+    +----------+-----------+-------------+-------------+------+
+    |   0xDC   |   byte    |    byte     |   byte      | 0xCD |
+    +----------+-----------+-------------+-------------+------+
+    """
+    DC_CH = 3  # default channel 4 as downstream daisy chain channel
+
+    DC_HEADER = 0xDC  # start of message
+    DC_EOM = 0xCD  # end of message
+
+    DC_SCAN = 0x01
