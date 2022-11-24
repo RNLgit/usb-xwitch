@@ -28,15 +28,15 @@ class HUBAddr(object):
     DEVICE_ID_LSB = RegAddr("DEVICE_ID_LSB", 0x04, 0x20)  # device ver LSB
     DEVICE_ID_MSB = RegAddr("DEVICE_ID_MSB", 0x05, 0x00)  # device ver MSB
     CONFIG_DATA_B1 = RegAddr("CONFIG_DATA_B1", 0x06, 0x9B)  # Configuration data byte 1
-    CONFIG_DATA_B2 = RegAddr("CONFIG_DATA_B2", 0x07, 0x20)
+    CONFIG_DATA_B2 = RegAddr("CONFIG_DATA_B2", 0x07, 0x30)
     CONFIG_DATA_B3 = RegAddr("CONFIG_DATA_B3", 0x08, 0x02)
     NON_REMOVABLE_DEV = RegAddr("NON_REMOVABLE_DEV", 0x09, 0x00)  # Non-removable devices
     PORT_DISABLE_SELF = RegAddr("PORT_DISABLE_SELF", 0x0A, 0x00)  # Port disable self
-    PORT_DISABLE_BUS = RegAddr("PORT_DISABLE_BUS", 0x0B, 0x00)  # Port disable bus
-    MAX_POWER_SELF = RegAddr("MAX_POWER_SELF", 0x0C, 0x01)  # max power self
-    MAX_POWER_BUS = RegAddr("MAX_POWER_BUS", 0x0D, 0x32)
-    MAX_CURR_SELF = RegAddr("MAX_CURR_SELF", 0x0E, 0x00)  # hub controller max current (self)
-    MAX_CURR_BUS = RegAddr("MAX_CURR_BUS", 0x0F, 0x00)
+    PORT_DISABLE_BUS = RegAddr("PORT_DISABLE_BUS", 0x0B, 0x1E)  # Port disable bus
+    MAX_POWER_SELF = RegAddr("MAX_POWER_SELF", 0x0C, 0x50)  # max power self
+    MAX_POWER_BUS = RegAddr("MAX_POWER_BUS", 0x0D, 0x50)
+    MAX_CURR_SELF = RegAddr("MAX_CURR_SELF", 0x0E, 0x50)  # hub controller max current (self)
+    MAX_CURR_BUS = RegAddr("MAX_CURR_BUS", 0x0F, 0x50)
     PWR_ON_TIME = RegAddr("PWR_ON_TIME", 0x10, 0x00)  # power on time
     LANG_ID_HIGH = RegAddr("LANG_ID_HIGH", 0x11, 0x04)  # language ID high (upper)
     LANG_ID_LOW = RegAddr("LANG_ID_LOW", 0x12, 0x09)  # language ID low
@@ -57,7 +57,7 @@ class HUBAddr(object):
     # Default Load List
     INIT_DEFAULT = [VENDOR_ID_LSB, VENDOR_ID_MSB, PRODUCT_ID_LSB, PRODUCT_ID_MSB, DEVICE_ID_LSB,
                     DEVICE_ID_MSB, CONFIG_DATA_B1, CONFIG_DATA_B2, CONFIG_DATA_B3, MAX_POWER_BUS,
-                    MAX_POWER_BUS, BATT_CHG_EN]
+                    MAX_POWER_BUS, MAX_POWER_SELF, MAX_CURR_SELF, BATT_CHG_EN]
     MFG_AUX_DEFAULT = [MFG_STR_LEN, PDT_STR_LEN, SN_STR_LEN, LANG_ID_HIGH, LANG_ID_LOW]
     MFG_DEFAULT = [MFG_STR, PDT_STR, SN_STR]
 
@@ -109,8 +109,14 @@ class DC(object):
     +----------+-----------+-------------+-------------+------+
     """
     DC_CH = 3  # default channel 4 as downstream daisy chain channel
-
+    # header and EoM
     DC_HEADER = 0xDC  # start of message
     DC_EOM = 0xCD  # end of message
-
-    DC_SCAN = 0x01
+    # Direction field
+    DIR_US = 0x01 # upstream direction
+    DIR_DS = 0x00  # downstream direction
+    # cmd field
+    SCAN = 0x01
+    CTRL = 0x02
+    HEARTBEAT = 0x03
+    # Data field
