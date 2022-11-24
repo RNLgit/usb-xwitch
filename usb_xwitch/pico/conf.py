@@ -102,21 +102,24 @@ class DC(object):
     Daisy chain messages. When invalid message, no response.
     Message format:
 
-    +----------+-----------+-------------+-------------+------+
-    |  header  | Direction |    CMD      | Data Field  | EoM  |
-    +----------+-----------+-------------+-------------+------+
-    |   0xDC   |   byte    |    byte     |   byte      | 0xCD |
-    +----------+-----------+-------------+-------------+------+
+    +----------+-----------+-------------+-------------+------+-------+
+    |  header  | Direction |    CMD      | Data Field  | RSVD |  CRC  |
+    +----------+-----------+-------------+-------------+------+-------+
+    |   0xDC   |   byte    |    byte     |   byte      | byte | byte  |
+    +----------+-----------+-------------+-------------+------+-------+
     """
     DC_CH = 3  # default channel 4 as downstream daisy chain channel
+    END_CHAIN_TIMEOUT = 1  # daisy chain scan broadcast seconds for end of chain hub scan
     # header and EoM
     DC_HEADER = 0xDC  # start of message
-    DC_EOM = 0xCD  # end of message
     # Direction field
-    DIR_US = 0x01 # upstream direction
+    DIR_US = 0x01  # upstream direction
     DIR_DS = 0x00  # downstream direction
     # cmd field
-    SCAN = 0x01
+    SCAN = 0x01  # Broadcast signal to scan for hubs can be daisy chained
     CTRL = 0x02
     HEARTBEAT = 0x03
     # Data field
+    DATA_DEF = 0x0  # Default data field value 0
+    # RSVD
+    RSVD = 0x0  # Reserved field
