@@ -190,11 +190,17 @@ class UARTController(object):
                 input_pad_arr[cur_shift + i] = str(int(poly_str[i] != input_pad_arr[cur_shift + i]))
         return '1' not in ''.join(input_pad_arr)[len(bit_str):]
 
-    def send_upstream(self, data: str) -> int:
+    def send_upstream(self, data: bytes, no_crc=True) -> int:
         return self.uart_us.write(data)
 
-    def send_downstream(self, data: str) -> int:
+    def send_downstream(self, data: bytes, no_crc=True) -> int:
         return self.uart_ds.write(data)
+    
+    def dc_broadcast(self) -> int:
+        """
+        Broadcast daisy chain signal to query for avaiable chain-able hubs
+        """
+        self.send_downstream()
 
     def rx_thread(self):
         while self.rx_flag:
