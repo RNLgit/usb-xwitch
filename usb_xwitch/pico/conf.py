@@ -103,23 +103,37 @@ class DC(object):
     Message format:
 
     +----------+-------------+-------------+-----------+------+-------+
-    |  header  |    CMD      | Data Field  | Direction | RSVD |  CRC  |
+    |  header  |    CMD      |   Hub No    | Hub Stat  | RSVD |  CRC  |
     +----------+-------------+-------------+-----------+------+-------+
     |   0xDC   |    byte     |   byte      |   byte    | byte | byte  |
     +----------+-------------+-------------+-----------+------+-------+
     """
     DC_CH = 3  # default channel 4 as downstream daisy chain channel
+    MSG_LEN = 6  # Daisy chain data message length 
     END_CHAIN_TIMEOUT = 1  # daisy chain scan broadcast seconds for end of chain hub scan
     # header and EoM
     DC_HEADER = 0xDC  # start of message
-    # Direction field
-    DIR_US = 0x01  # upstream direction
-    DIR_DS = 0x00  # downstream direction
+
     # cmd field
     SCAN = 0x01  # Broadcast signal to scan for hubs can be daisy chained
-    CTRL = 0x02  # Address hub No. in the chain to set on/off according to data field
-    HEARTBEAT = 0x03
+    """
+    SET_HUB: 
+        Hub No: hub chain no. Self hub no 0x00. Max 255 hubs
+        Hub Stat: chained hub channels on/off stat. i.e. at the #HubNo hub, set / get ch 0 & 3 on, 1 & 2 off.
+            which is [1, 0, 1, 0], in bits: b00000101, in hex 0x05
+    """
+    SET_HUB = 0x02
+    GET_HUB = 0x03
+    SET_SWITCH = 0x04  # Hub No is switch to MUX channel
+    GET_SWITCH = 0x05
+    GET_TOT_HUBS = 0x06  # get total hubs number
+
     # Data field
     DATA_DEF = 0x0  # Default data field value 0
     # RSVD
     RSVD = 0x0  # Reserved field
+
+    @staticmethod
+    def make_data(cmd: int, data1: int, data2: int, rsvd=RSVD) -> bytes:
+        #TODO: CRC calculation for last byte
+        return bytes([DC.DC_HEADER, cmd, data1, data2, rsvd, 0x0])

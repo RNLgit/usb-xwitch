@@ -1,5 +1,5 @@
 from machine import Pin, ADC, UART, I2C
-from conf import HUBAddr, HW
+from conf import HUBAddr, HW, DC
 import time
 from collections import deque
 import _thread
@@ -8,6 +8,7 @@ __pcb__ = '0.2'
 __version__ = '0.2 a1'
 
 led_ind_stat = False
+hub_no = 0
 
 
 def _intr_change_switch(pin) -> None:
@@ -159,6 +160,7 @@ class HUBI2C(object):
 
 class UARTController(object):
     CRC_KEY = '1101'  # polynomial x^3 + x^2 + x^0
+    MSG_SCAN = DC.make_data(DC.SCAN, 0x00, 0x00)
 
     def __init__(self, tx_upstream: int, rx_upstream: int, tx_downstream: int, rx_downstream: int, baudrate=HW.UART_BAUD):
         self.q_us = deque((), HW.Q_LEN)
@@ -191,16 +193,21 @@ class UARTController(object):
         return '1' not in ''.join(input_pad_arr)[len(bit_str):]
 
     def send_upstream(self, data: bytes, no_crc=True) -> int:
+        if data[0] != DC.DC_HEADER or len(data) != DC.MSG_LEN:
+            raise ValueError('Invalid daisy chain data')
         return self.uart_us.write(data)
 
     def send_downstream(self, data: bytes, no_crc=True) -> int:
+        if data[0] != DC.DC_HEADER or len(data) != DC.MSG_LEN:
+            raise ValueError('Invalid daisy chain data')
         return self.uart_ds.write(data)
     
     def dc_broadcast(self) -> int:
         """
         Broadcast daisy chain signal to query for avaiable chain-able hubs
         """
-        self.send_downstream()
+        self.send_downstream(self.MSG_SCAN)
+        global hub_no
 
     def rx_thread(self):
         while self.rx_flag:
