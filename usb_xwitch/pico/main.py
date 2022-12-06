@@ -1,5 +1,5 @@
 from machine import Pin, ADC, UART, I2C
-from conf import HUBAddr, HW, DC
+from conf import HUBAddr, HW, DC, DCMSG
 import time
 from collections import deque
 import _thread
@@ -160,7 +160,7 @@ class HUBI2C(object):
 
 class UARTController(object):
     CRC_KEY = '1101'  # polynomial x^3 + x^2 + x^0
-    MSG_SCAN = DC.make_data(DC.SCAN, 0x00, 0x00)
+    MSG_SCAN = DC.make_data(DC.SCAN, DC.DATA_DEF, DC.DATA_DEF)
 
     def __init__(self, tx_upstream: int, rx_upstream: int, tx_downstream: int, rx_downstream: int, baudrate=HW.UART_BAUD):
         self.q_us = deque((), HW.Q_LEN)
@@ -208,6 +208,18 @@ class UARTController(object):
         """
         self.send_downstream(self.MSG_SCAN)
         global hub_no
+    
+    def relay_broadcast(self, dcmsg: DCMSG) -> int:
+        if dcmsg.cmd == DC.SCAN:
+            nxt_relay = DC.make_data(DC.SCAN, dcmsg.hub_no + 1, DC.DATA_DEF)
+            self.send_downstream(nxt_relay)
+            return
+        elif dcmsg.cmd == DC.SCAN_RTN:
+            self.send_upstream(dcmsg.raw)
+        pass
+    
+    def msg_switch(self) -> None:
+        pass
 
     def rx_thread(self):
         while self.rx_flag:

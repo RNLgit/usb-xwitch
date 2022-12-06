@@ -1,6 +1,7 @@
 from ucollections import namedtuple
 
 RegAddr = namedtuple("RegisterAddr", ("name", "addr", "default_val"))
+DCMSG = namedtuple("DaisychainMsg", ("raw", "cmd", "hub_no", "hub_stat", "rsvd"))
 
 
 class HUBAddr(object):
@@ -116,6 +117,7 @@ class DC(object):
 
     # cmd field
     SCAN = 0x01  # Broadcast signal to scan for hubs can be daisy chained
+    SCAN_RTN = 0x11
     """
     SET_HUB: 
         Hub No: hub chain no. Self hub no 0x00. Max 255 hubs
@@ -135,5 +137,13 @@ class DC(object):
 
     @staticmethod
     def make_data(cmd: int, data1: int, data2: int, rsvd=RSVD) -> bytes:
-        #TODO: CRC calculation for last byte
+        # TODO: CRC calculation for last byte
         return bytes([DC.DC_HEADER, cmd, data1, data2, rsvd, 0x0])
+    
+    @classmethod
+    def decode_data(cls, data: bytes) -> DCMSG:
+        if len(data) != cls.MSG_LEN:
+            raise ValueError("Invalid data length to decode.")
+        if data[0] != cls.DC_HEADER:
+            raise ValueError("Invalid daisy chain message header")
+        return DCMSG(data, data[1], data[2], data[3], data[4])
