@@ -8,7 +8,8 @@ __pcb__ = '0.2'
 __version__ = '0.2 a1'
 
 led_ind_stat = False
-hub_no = 0
+hub_chain_no = 0
+eoc = False  # end of daisy chain flag
 
 
 def _intr_change_switch(pin) -> None:
@@ -207,19 +208,24 @@ class UARTController(object):
         Broadcast daisy chain signal to query for avaiable chain-able hubs
         """
         self.send_downstream(self.MSG_SCAN)
-        global hub_no
+        global hub_chain_no
     
-    def relay_broadcast(self, dcmsg: DCMSG) -> int:
+    def relay_broadcast_msg(self, dcmsg: DCMSG) -> int:
         if dcmsg.cmd == DC.SCAN:
-            nxt_relay = DC.make_data(DC.SCAN, dcmsg.hub_no + 1, DC.DATA_DEF)
-            self.send_downstream(nxt_relay)
+            global hub_chain_no
+            hub_chain_no = dcmsg.hub_no + 1
+            msg_nxt_relay = DC.make_data(DC.SCAN, hub_chain_no, DC.DATA_DEF)
+            self.send_downstream(msg_nxt_relay)
             return
         elif dcmsg.cmd == DC.SCAN_RTN:
             self.send_upstream(dcmsg.raw)
-        pass
     
-    def msg_switch(self) -> None:
-        pass
+    def msg_switch(self, data: bytes) -> None:
+        if data[0] != DC.DC_HEADER or len(data) != DC.MSG_LEN:
+            return
+        msg = DCMSG(data, data[1], data[2], data[3], data[4])
+        if msg.cmd == DC.SCAN or msg.cmd == DC.SCAN_RTN:
+            self.relay_broadcast_msg(msg)
 
     def rx_thread(self):
         while self.rx_flag:
@@ -231,6 +237,16 @@ class UARTController(object):
                 self.q_lock.acquire()
                 self.q_ds.append(self.uart_ds.read(HW.DATA_SIZE))
                 self.q_lock.release()
+            if len(self.q_us) > 0:  # command switch of message from upstream
+                self.q_lock.acquire()
+                data_raw = self.q_us.popleft()
+                self.q_lock.release()
+                self.msg_switch(data_raw)
+            if len(self.q_ds) > 0:  # cmd switch for msg from downstream
+                self.q_lock.acquire()
+                data_raw = self.q_ds.popleft()
+                self.q_lock.release()
+                self.msg_switch(data_raw)
 
 
 def version() -> str:

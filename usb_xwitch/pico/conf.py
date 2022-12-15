@@ -112,6 +112,7 @@ class DC(object):
     DC_CH = 3  # default channel 4 as downstream daisy chain channel
     MSG_LEN = 6  # Daisy chain data message length 
     END_CHAIN_TIMEOUT = 1  # daisy chain scan broadcast seconds for end of chain hub scan
+    BROADCAST_TIMEOUT = 3  # whole daisy chain hub broadcast process timeout
     # header and EoM
     DC_HEADER = 0xDC  # start of message
 
@@ -129,6 +130,9 @@ class DC(object):
     SET_SWITCH = 0x04  # Hub No is switch to MUX channel
     GET_SWITCH = 0x05
     GET_TOT_HUBS = 0x06  # get total hubs number
+
+    # Hub stat field
+    SCAN_ACK = 0x01  # used for downstream ack upscream uart dc relaying message
 
     # Data field
     DATA_DEF = 0x0  # Default data field value 0
