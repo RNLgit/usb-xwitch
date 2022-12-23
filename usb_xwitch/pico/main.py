@@ -8,7 +8,8 @@ __pcb__ = '0.2'
 __version__ = '0.2 a1'
 
 led_ind_stat = False
-hub_chain_no = 0
+hub_chain_no = -1
+total_hubs = -1
 eoc = False  # end of daisy chain flag
 
 
@@ -192,6 +193,30 @@ class UARTController(object):
             for i in range(len(poly_str)):
                 input_pad_arr[cur_shift + i] = str(int(poly_str[i] != input_pad_arr[cur_shift + i]))
         return '1' not in ''.join(input_pad_arr)[len(bit_str):]
+    
+    def _read_data(self, ds_us_obj) -> DCMSG:
+        """
+        read a daisy chain data outside rx thread function
+        """
+        if ds_us_obj.any() > 0:
+            self.q_lock.acquire()
+            data = self.uart_us.read(HW.DATA_SIZE)
+            self.q_lock.release()
+            if data[0] != DC.DC_HEADER or len(data) != DC.MSG_LEN:
+                return  # invalid ack data return None
+            return DCMSG(data, data[1], data[2], data[3], data[4])
+        
+    def _wait_next_ack(self):
+        """
+        wait for next daisy chain hub to ack upstream scan command been sent
+        """
+        start_t = time.ticks_ms()
+        while time.ticks_ms() - start_t < DC.END_CHAIN_TIMEOUT:
+            ack = self._read_data(self.uart_ds)
+            if ack:
+                if ack.hub_stat == DC.SCAN_ACK:
+                    return True
+        return False
 
     def send_upstream(self, data: bytes, no_crc=True) -> int:
         if data[0] != DC.DC_HEADER or len(data) != DC.MSG_LEN:
@@ -205,31 +230,53 @@ class UARTController(object):
     
     def dc_broadcast(self) -> int:
         """
-        Broadcast daisy chain signal to query for avaiable chain-able hubs
+        Initiate a broadcast daisy chain signal to query for avaiable chain-able hubs. The current hub (issuer) will 
+        be the first device of the chain.
         """
-        self.send_downstream(self.MSG_SCAN)
         global hub_chain_no
+        global total_hubs
+        hub_chain_no = 0
+        msg_nxt_relay = DC.make_data(DC.SCAN, hub_chain_no, DC.DATA_DEF)
+        self.send_downstream(msg_nxt_relay)
+        time_s = time.ticks_ms()
+        if self._wait_next_ack():
+            while time.ticks_ms() - time_s < DC.BROADCAST_TIMEOUT:
+                hubs_data = self._read_data(self.uart_ds)
+                if hubs_data.cmd == DC.SCAN_RTN:
+                    return hubs_data.hub_no
+        total_hubs = -1
+        hub_chain_no = -1
     
-    def relay_broadcast_msg(self, dcmsg: DCMSG) -> int:
-        if dcmsg.cmd == DC.SCAN:
+    def msg_relay_broadcast(self, dcmsg: DCMSG) -> int:
+        """
+        downstream hubs for relaying or returning daisy chain message
+        """
+        if dcmsg.cmd == DC.SCAN:  # relay dc signal to next downstream with chain no +1
             global hub_chain_no
             hub_chain_no = dcmsg.hub_no + 1
             msg_nxt_relay = DC.make_data(DC.SCAN, hub_chain_no, DC.DATA_DEF)
             self.send_downstream(msg_nxt_relay)
-            return
-        elif dcmsg.cmd == DC.SCAN_RTN:
+            if not self._wait_next_ack():  # end of chain found
+                DC.make_data(DC.SCAN_RTN, hub_chain_no, DC.DATA_DEF)
+                self.send_upstream()
+        elif dcmsg.cmd == DC.SCAN_RTN:  # return signal from downstream back to upstream broadcaster
+            global total_hubs
+            total_hubs = dcmsg.hub_no
             self.send_upstream(dcmsg.raw)
     
     def msg_switch(self, data: bytes) -> None:
+        """
+        routing message to its owm execution function
+        """
         if data[0] != DC.DC_HEADER or len(data) != DC.MSG_LEN:
             return
         msg = DCMSG(data, data[1], data[2], data[3], data[4])
         if msg.cmd == DC.SCAN or msg.cmd == DC.SCAN_RTN:
-            self.relay_broadcast_msg(msg)
+            self.msg_relay_broadcast(msg)
 
     def rx_thread(self):
         while self.rx_flag:
-            if self.uart_us.any() > 0:  # if there's any data in rx thread
+            if self.uart_us.any() > 0:  # if there's any data in rx buffer
                 self.q_lock.acquire()
                 self.q_us.append(self.uart_us.read(HW.DATA_SIZE))
                 self.q_lock.release()
@@ -237,12 +284,12 @@ class UARTController(object):
                 self.q_lock.acquire()
                 self.q_ds.append(self.uart_ds.read(HW.DATA_SIZE))
                 self.q_lock.release()
-            if len(self.q_us) > 0:  # command switch of message from upstream
+            if len(self.q_us) > 0:  # processing message from upstream
                 self.q_lock.acquire()
                 data_raw = self.q_us.popleft()
                 self.q_lock.release()
                 self.msg_switch(data_raw)
-            if len(self.q_ds) > 0:  # cmd switch for msg from downstream
+            if len(self.q_ds) > 0:  # processing message from downstream
                 self.q_lock.acquire()
                 data_raw = self.q_ds.popleft()
                 self.q_lock.release()
