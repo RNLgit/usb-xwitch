@@ -111,8 +111,8 @@ class DC(object):
     """
     DC_CH = 3  # default channel 4 as downstream daisy chain channel
     MSG_LEN = 6  # Daisy chain data message length 
-    END_CHAIN_TIMEOUT = 1  # daisy chain scan broadcast seconds for end of chain hub scan
-    BROADCAST_TIMEOUT = 3  # whole daisy chain hub broadcast process timeout
+    END_CHAIN_TIMEOUT = 1000  # daisy chain scan broadcast miliseconds for end of chain hub scan
+    BROADCAST_TIMEOUT = 3000  # whole daisy chain hub broadcast process timeout in miliseconds
     # header and EoM
     DC_HEADER = 0xDC  # start of message
 
