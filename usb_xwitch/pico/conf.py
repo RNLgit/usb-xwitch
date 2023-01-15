@@ -126,7 +126,9 @@ class DC(object):
             which is [1, 0, 1, 0], in bits: b00000101, in hex 0x05
     """
     SET_HUB = 0x02
+    SET_HUB_RTN = 0x12
     GET_HUB = 0x03
+    GET_HUB_RTN = 0x13
     SET_SWITCH = 0x04  # Hub No is switch to MUX channel
     GET_SWITCH = 0x05
     GET_TOT_HUBS = 0x06  # get total hubs number
