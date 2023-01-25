@@ -6,9 +6,10 @@ import _thread
 
 __pcb__ = '0.2'
 __version__ = '0.2 a1'
+_debug = False
 
 led_ind_stat = False
-hub_chain_no = -1
+hub_chain_id = -1
 total_hubs = -1
 eoc = False  # end of daisy chain flag
 
@@ -84,26 +85,6 @@ def set_hub(on_off_lst: list) -> None:
     _hub.attach()
 
 
-def set_hub_chain(on_off_dict: dict) -> None:
-    """
-    set hub(s) on/off in daisy chain. i.e. to set third hub, first channel off, others on, use:
-        {2: [0, 1, 1]}
-
-    Note when chain is not the last hub of daisy chain, there're only three ports avaiable.(one used
-    for chaining next hub to previous)
-    """
-    if -1 in (hub_chain_no, total_hubs):
-        raise ValueError("daisy chain hub not been configured or not configured correctly")
-    ds_dict = on_off_dict.copy()
-    for hub_no, set_stat in on_off_dict.items():
-        if hub_chain_no == hub_no:
-            set_stat.insert(DC.DC_CH, True)  # hub channel used for chain next hub must on
-            set_hub(set_stat)
-            ds_dict.pop(hub_no)
-        else:
-            _uart.send_downstream(DC.make_data(DC.SET_HUB, hub_no, int(''.join([str(i) for i in set_stat]), 2)))
-
-
 def get_hub() -> tuple:
     """
     get usb hub current channels status in tuple of bools.
@@ -111,21 +92,6 @@ def get_hub() -> tuple:
     data = _hub._br(HUBAddr.PORT_DISABLE_SELF.addr)[1]
     return not bool(data & HUBAddr.PORT_MSK_1), not bool(data & HUBAddr.PORT_MSK_2), \
         not bool(data & HUBAddr.PORT_MSK_3), not bool(data & HUBAddr.PORT_MSK_4)
-
-
-def get_hub_chain(hub_id: int):
-    """
-    get hub channel on/off status on daisy chain
-    """
-    _uart.send_downstream(DC.make_data(DC.GET_HUB, hub_id, DC.DATA_DEF))
-    start_ms = time.ticks_ms()
-    while time.ticks_ms() - start_ms < DC.END_CHAIN_TIMEOUT:
-        if len(_uart.q_msg) > 0:
-            _uart.q_lock.acquire()
-            msg = _uart.q_msg.popleft()
-            _uart.q_lock.release()
-            if hasattr(msg, cmd):
-                if msg.cmd == 
 
 
 class HUBI2C(object):
@@ -196,6 +162,9 @@ class HUBI2C(object):
 
 
 class UARTController(object):
+    """
+    UART to communicate to upstream / downstream devices. Daisy chain function for usb hub
+    """
     CRC_KEY = '1101'  # polynomial x^3 + x^2 + x^0
     MSG_SCAN = DC.make_data(DC.SCAN, DC.DATA_DEF, DC.DATA_DEF)
 
@@ -204,7 +173,6 @@ class UARTController(object):
         self.uart_us = UART(0, baudrate=baudrate, tx=Pin(tx_upstream), rx=Pin(rx_upstream))
         self.q_ds = deque((), HW.Q_LEN)
         self.uart_ds = UART(1, baudrate=baudrate, tx=Pin(tx_downstream), rx=Pin(rx_downstream))
-        self.q_msg = deque((), HW.Q_LEN)
         self.rx_flag = True
         self.q_lock = _thread.allocate_lock()
         _thread.start_new_thread(self.rx_thread, ())
@@ -235,17 +203,16 @@ class UARTController(object):
         read a daisy chain data outside rx thread function
         """
         if ds_us_obj.any() > 0:
-            self.q_lock.acquire()
-            data = self.uart_us.read(HW.DATA_SIZE)
-            self.q_lock.release()
+            data = ds_us_obj.read(HW.DATA_SIZE)
             if data[0] != DC.DC_HEADER or len(data) != DC.MSG_LEN:
                 return  # invalid ack data return None
             return DCMSG(data, data[1], data[2], data[3], data[4])
         
-    def _wait_next_ack(self):
+    def _wait_ds_ack(self):
         """
-        wait for next daisy chain hub to ack upstream scan command been sent
+        wait for next daisy chain downstream hub to ack upstream scan command been sent
         """
+        if _debug: print('DaisyChain: waiting downstream ack')
         start_t = time.ticks_ms()
         while time.ticks_ms() - start_t < DC.END_CHAIN_TIMEOUT:
             ack = self._read_data(self.uart_ds)
@@ -269,55 +236,74 @@ class UARTController(object):
         Initiate a broadcast daisy chain signal to query for avaiable chain-able hubs. The current hub (issuer) will 
         be the first device of the chain.
         """
-        global hub_chain_no
+        self.q_lock.acquire()
+        global hub_chain_id
         global total_hubs
-        hub_chain_no = 0
-        msg_nxt_relay = DC.make_data(DC.SCAN, hub_chain_no, DC.DATA_DEF)
+        hub_chain_id = 0
+        msg_nxt_relay = DC.make_data(DC.SCAN, hub_chain_id, DC.DATA_DEF)
+        if _debug: print('DaisyChain: sending broadcasting message to downstream')
         self.send_downstream(msg_nxt_relay)
         time_s = time.ticks_ms()
-        if self._wait_next_ack():
+        if self._wait_ds_ack():
+            if _debug: print('DaisyChain: Got ACK from first downstream hub, waiting daisy chain return message')
             while time.ticks_ms() - time_s < DC.BROADCAST_TIMEOUT:
                 hubs_data = self._read_data(self.uart_ds)
-                if hubs_data.cmd == DC.SCAN_RTN:
-                    return hubs_data.hub_no
+                if hubs_data:  # prevent checking None
+                    if hubs_data.cmd == DC.SCAN_RTN:
+                        self.q_lock.release()
+                        hub_chain_id = 0
+                        total_hubs = hubs_data.hub_no
+                        if _debug: print(f'DaisyChain: received return message. Total hubs are: {total_hubs} + 1. This hub index: {hub_chain_id}')
+                        return total_hubs  # return back with total number of hubs on chain (starting 0)
         total_hubs = -1
-        hub_chain_no = -1
+        hub_chain_id = -1
+        self.q_lock.release()
+        return -1
     
     def msg_relay_broadcast(self, dcmsg: DCMSG) -> int:
         """
         downstream hubs for relaying or returning daisy chain message
         """
-        if dcmsg.cmd == DC.SCAN:  # relay dc signal to next downstream with chain no +1
-            global hub_chain_no
-            hub_chain_no = dcmsg.hub_no + 1
-            msg_nxt_relay = DC.make_data(DC.SCAN, hub_chain_no, DC.DATA_DEF)
-            self.send_downstream(msg_nxt_relay)
-            if not self._wait_next_ack():  # end of chain found
-                DC.make_data(DC.SCAN_RTN, hub_chain_no, DC.DATA_DEF)
-                self.send_upstream()
-        elif dcmsg.cmd == DC.SCAN_RTN:  # return signal from downstream back to upstream broadcaster
+        if _debug: print(f'DaisyChain: relaying: {dcmsg}')
+        global hub_chain_id
+        hub_chain_id = dcmsg.hub_no + 1
+        msg_nxt_relay = DC.make_data(DC.SCAN, hub_chain_id, DC.DATA_DEF)
+        self.send_downstream(msg_nxt_relay)
+        ack_back = DC.make_data(DC.SCAN, DC.DATA_DEF, DC.SCAN_ACK)
+        self.send_upstream(ack_back)
+        if not self._wait_ds_ack():  # end of chain found
+            dc_rtn_msg = DC.make_data(DC.SCAN_RTN, hub_chain_id, DC.DATA_DEF)
+            self.send_upstream(dc_rtn_msg)
             global total_hubs
-            total_hubs = dcmsg.hub_no
-            self.send_upstream(dcmsg.raw)
+            total_hubs = hub_chain_id  # no of end chain hub is total hubs number
+            if _debug: print(f'DaisyChain: this hub is end of chain, this hub id: {hub_chain_id}, sending back: {dc_rtn_msg}')
+    
+    def msg_return_chain(self, dcmsg: DCMSG) -> None:
+        """
+        returning daisy chain downstream 
+        """
+        if _debug: print(f'DaisyChain: returnning to upstream: {dcmsg}')
+        global total_hubs
+        total_hubs = dcmsg.hub_no
+        self.send_upstream(dcmsg.raw)
     
     def msg_switch(self, data: bytes) -> None:
         """
         routing message to its owm execution function
         """
+        if not data:  # prevent checking None
+            return
         if data[0] != DC.DC_HEADER or len(data) != DC.MSG_LEN:
             return
         msg = DCMSG(data, data[1], data[2], data[3], data[4])
-        if msg.cmd == DC.SCAN or msg.cmd == DC.SCAN_RTN:
+        if msg.cmd == DC.SCAN:
+            if _debug: print(f'DaisyChain: scan downstream message received: {msg}')
             self.msg_relay_broadcast(msg)
-        elif msg.cmd == DC.GET_HUB_RTN:
-            self.q_lock.acquire()
-            self.q_msg.append(msg)
-            self.q_lock.release()
+        elif msg.cmd == DC.SCAN_RTN:
+            if _debug: print(f'DaisyChain: returning upstream message received :{msg}')
+            self.msg_return_chain(msg)
 
     def rx_thread(self):
-        """
-        thread that handling data buffer from upstream uart or downstream uart
-        """
         while self.rx_flag:
             if self.uart_us.any() > 0:  # if there's any data in rx buffer
                 self.q_lock.acquire()
