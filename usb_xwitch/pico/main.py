@@ -252,8 +252,8 @@ class UARTController(object):
                     if hubs_data.cmd == DC.SCAN_RTN:
                         self.q_lock.release()
                         hub_chain_id = 0
-                        total_hubs = hubs_data.hub_no
-                        if _debug: print(f'DaisyChain: received return message. Total hubs are: {total_hubs} + 1. This hub index: {hub_chain_id}')
+                        total_hubs = hubs_data.hub_no + 1
+                        if _debug: print(f'DaisyChain: received return message. Total hubs are: {total_hubs}. This hub index: {hub_chain_id}')
                         return total_hubs  # return back with total number of hubs on chain (starting 0)
         total_hubs = -1
         hub_chain_id = -1
