@@ -94,10 +94,24 @@ def get_hub() -> tuple:
         not bool(data & HUBAddr.PORT_MSK_3), not bool(data & HUBAddr.PORT_MSK_4)
 
 
+def get_hubs() -> dict:
+    """
+    get available hubs all port status in dict
+    """
+    if hub_chain_id < 0:
+        raise ValueError("HUB in standalone mode. Connect daisy chain and use dc_broadcast before use this function.")
+    hub_dict = {}
+    for id in range(total_hubs):
+        hub_dict[id] = get_hub_chain(id)
+    return hub_dict
+
+
 def get_hub_chain(hub_id: int) -> list:
     """
     get hub channel on/off status on daisy chain
     """
+    if hub_id == hub_chain_id:  # when querying current hub, not returning the channel used for daisy chain
+        return [x for i, x in enumerate(get_hub()) if i != DC.DC_CH]
     _uart.send_downstream(DC.make_data(DC.GET_HUB, hub_id, DC.DATA_DEF))
     start_ms = time.ticks_ms()
     while time.ticks_ms() - start_ms < DC.END_CHAIN_TIMEOUT:
