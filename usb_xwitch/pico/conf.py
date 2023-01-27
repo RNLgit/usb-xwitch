@@ -134,12 +134,15 @@ class DC(object):
     GET_TOT_HUBS = 0x06  # get total hubs number
 
     # Hub stat field
-    SCAN_ACK = 0x01  # used for downstream ack upscream uart dc relaying message
+    ACK = 0x01  # used for downstream ack upscream uart dc relaying message
     ERROR = 0xFF  # error
+
+    # Hub attributes in stat field
     CHANNEL_MSK_1 = 0x01  # port mask for HUB stat field when returning GET_HUB_RTN
     CHANNEL_MSK_2 = 0x02
     CHANNEL_MSK_3 = 0x04
     CHANNEL_MSK_4 = 0x08
+    CHANNEL_MSKS = [CHANNEL_MSK_1, CHANNEL_MSK_2, CHANNEL_MSK_3, CHANNEL_MSK_4]
 
     # default values
     DATA_DEF = 0x0  # Default data field value 0
@@ -150,7 +153,7 @@ class DC(object):
     def make_data(cmd: int, data1: int, data2: int, rsvd=RSVD) -> bytes:
         # TODO: CRC calculation for last byte
         return bytes([DC.DC_HEADER, cmd, data1, data2, rsvd, 0x0])
-    
+
     @classmethod
     def decode_data(cls, data: bytes) -> DCMSG:
         if len(data) != cls.MSG_LEN:
@@ -158,3 +161,7 @@ class DC(object):
         if data[0] != cls.DC_HEADER:
             raise ValueError("Invalid daisy chain message header")
         return DCMSG(data, data[1], data[2], data[3], data[4])
+
+
+class TimeOutError(BaseException):
+    pass

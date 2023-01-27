@@ -85,6 +85,36 @@ def set_hub(on_off_lst: list) -> None:
     _hub.attach()
 
 
+def set_hub_chain(*args) -> None:
+    """
+    set hub channel on off in chain giving its id. id as kwargs name and bool list as argument.
+    e.g.:
+        >>> set_hub_chain(None, [1,0,0])  # set 2nd hub (hub id 1) channel 1 on, 2 & 3 off, first hub unchanged (None). 
+        Where channel 4 used for connecting next chain hub.
+        >>> set_hub_chain(None, None, [0, 1, 0, 1])  # set 3rd hub (id 2) channel 2 & 4 on, 1 & 3 off. Total 3 hubs in 
+        the chain.
+    """
+    if len(args) > total_hubs:
+        raise IndexError(f"trying to set hub outside range. total hubs: {total_hubs}")
+    for i in reversed(range(len(args))):  # from furtherest chain avoid been cycled by upstream
+        if args[i]:
+            if _debug: print(f"DaisyChain: SET_HUB: args: {args}, i: {i}")
+            if len(args[i]) > len(DC.CHANNEL_MSKS) - 1 and i + 1 < total_hubs:
+                raise IndexError(f"Too many channels to set hub: {i}. (mid-chain hubs need one channel for next hub)")
+            _uart.send_downstream(DC.make_data(DC.SET_HUB, i,
+                                               sum([ch for ch_on, ch in zip(args[i], DC.CHANNEL_MSKS) if ch_on])))
+            start_ms = time.ticks_ms()
+            while time.ticks_ms() - start_ms < DC.END_CHAIN_TIMEOUT:
+                if len(_uart.q_msg) > 0:
+                    msg = _uart.q_msg.popleft()
+                    if _debug: print(f"DaisyChain: SET_HUB: msg queue: {msg}")
+                    if hasattr(msg, "cmd"):
+                        if msg.cmd == DC.SET_HUB_RTN and int(msg.hub_no) == int(i) and msg.hub_stat == DC.ACK:
+                            if _debug: print(f"cmd:{msg.cmd}, no:{msg.hub_no}, st:{msg.hub_stat}")
+                            continue
+            raise ValueError(f"trying to set hub: {i} in chain with no ack response")
+
+
 def get_hub() -> tuple:
     """
     get usb hub current channels status in tuple of bools.
@@ -128,7 +158,7 @@ def get_hub_chain(hub_id: int) -> list:
                     if hub_id + 1 == total_hubs:  # querying hub is end of chain, have all 4 ports available
                         ch1to3.append(bool(DC.CHANNEL_MSK_4 & msg.hub_stat))
                     return ch1to3
-    raise TimeoutError(f"no downstream hub responding within: {DC.END_CHAIN_TIMEOUT}ms")
+    raise ValueError(f"no downstream hub responding within: {DC.END_CHAIN_TIMEOUT}ms")
 
 
 class HUBI2C(object):
@@ -255,7 +285,7 @@ class UARTController(object):
         while time.ticks_ms() - start_t < DC.END_CHAIN_TIMEOUT:
             ack = self._read_data(self.uart_ds)
             if ack:
-                if ack.hub_stat == DC.SCAN_ACK:
+                if ack.hub_stat == DC.ACK:
                     return True
         return False
 
@@ -307,7 +337,7 @@ class UARTController(object):
         hub_chain_id = dcmsg.hub_no + 1
         msg_nxt_relay = DC.make_data(DC.SCAN, hub_chain_id, DC.DATA_DEF)
         self.send_downstream(msg_nxt_relay)
-        ack_back = DC.make_data(DC.SCAN, DC.DATA_DEF, DC.SCAN_ACK)
+        ack_back = DC.make_data(DC.SCAN, DC.DATA_DEF, DC.ACK)
         self.send_upstream(ack_back)
         if not self._wait_ds_ack():  # end of chain found
             dc_rtn_msg = DC.make_data(DC.SCAN_RTN, hub_chain_id + 1, DC.DATA_DEF)  # total + 1 as id starts 0
@@ -355,10 +385,27 @@ class UARTController(object):
             else:
                 if _debug: print(f"DaisyChain: GET_HUB: {msg} not in scope of current chain, relaying msg to next hub")
                 self.send_downstream(msg.raw)
-        elif msg.cmd == DC.GET_HUB_RTN and hub_chain_id > 0:
-            if _debug: print(f"DaisyChain: GET_HUB_RTN: {msg}")
+        elif msg.cmd == DC.SET_HUB:
+            if _debug: print(f"DaisyChain: SET_HUB: request received: {msg}")
+            if msg.hub_no == hub_chain_id:
+                if hub_chain_id + 1 == total_hubs:
+                    set_lst = [bool(msg.hub_stat & DC.CHANNEL_MSK_1), bool(msg.hub_stat & DC.CHANNEL_MSK_2),
+                               bool(msg.hub_stat & DC.CHANNEL_MSK_3), bool(msg.hub_stat & DC.CHANNEL_MSK_4)]
+                    set_hub(set_lst)
+                    self.send_upstream(DC.make_data(DC.SET_HUB_RTN, hub_chain_id, DC.ACK))
+                else:
+                    set_lst = [bool(msg.hub_stat & DC.CHANNEL_MSK_1), bool(msg.hub_stat & DC.CHANNEL_MSK_2),
+                               bool(msg.hub_stat & DC.CHANNEL_MSK_3)]
+                    set_lst.insert(DC.DC_CH, True)  # channel to chain next hub should always set on
+                    set_hub(set_lst)
+                    self.send_upstream(DC.make_data(DC.SET_HUB_RTN, hub_chain_id, DC.ACK))
+            else:
+                if _debug: print(f"DaisyChain: SET_HUB: {msg} not in scope of current chain, relaying cmd to next hub")
+                self.send_downstream(msg.raw)
+        elif msg.cmd in [DC.GET_HUB_RTN, DC.SET_HUB_RTN] and hub_chain_id > 0:
+            if _debug: print(f"DaisyChain: GET/SET_HUB_RTN: {msg}")
             self.send_upstream(msg.raw)
-        else:  # all the rest dump into msg queue
+        else:  # all the rest dump into msg queue, mainly for controlling hub to read
             self.q_msg.append(msg)
 
     def rx_thread(self):
@@ -406,7 +453,7 @@ _sw2_pd = Pin(HW.PD_U2, Pin.OUT)
 _sw2_pd.value(HW.LOW)
 _sw2_sel = Pin(HW.SEL_U2, Pin.OUT)
 _sw3_pd = Pin(HW.PD_U3, Pin.OUT)
-_sw3_pd.value(HW.HIGH)  #TODO: debug USB3 comms
+_sw3_pd.value(HW.HIGH)  # TODO: debug USB3 comms
 _sw3_sel = Pin(HW.SEL_U3, Pin.OUT)
 _sw_rel = Pin(HW.SW_REL, Pin.OUT)
 # switch manual button control pre-condition
