@@ -135,8 +135,13 @@ class DC(object):
 
     # Hub stat field
     SCAN_ACK = 0x01  # used for downstream ack upscream uart dc relaying message
+    ERROR = 0xFF  # error
+    CHANNEL_MSK_1 = 0x01  # port mask for HUB stat field when returning GET_HUB_RTN
+    CHANNEL_MSK_2 = 0x02
+    CHANNEL_MSK_3 = 0x04
+    CHANNEL_MSK_4 = 0x08
 
-    # Data field
+    # default values
     DATA_DEF = 0x0  # Default data field value 0
     # RSVD
     RSVD = 0x0  # Reserved field

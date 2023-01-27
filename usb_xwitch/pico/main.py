@@ -94,6 +94,29 @@ def get_hub() -> tuple:
         not bool(data & HUBAddr.PORT_MSK_3), not bool(data & HUBAddr.PORT_MSK_4)
 
 
+def get_hub_chain(hub_id: int) -> list:
+    """
+    get hub channel on/off status on daisy chain
+    """
+    _uart.send_downstream(DC.make_data(DC.GET_HUB, hub_id, DC.DATA_DEF))
+    start_ms = time.ticks_ms()
+    while time.ticks_ms() - start_ms < DC.END_CHAIN_TIMEOUT:
+        if len(_uart.q_msg) > 0:
+            msg = _uart.q_msg.popleft()
+            if hasattr(msg, "cmd"):
+                if msg.cmd == DC.GET_HUB_RTN:
+                    if _debug: print(f"DaisyChain: get downstream chain stat: {msg}")
+                    assert msg.hub_no == hub_id
+                    if msg.hub_stat == DC.ERROR:
+                        raise OSError(f"hub id:{hub_id} not activated yet. Please check it it is connected")
+                    ch1to3 = [bool(DC.CHANNEL_MSK_1 & msg.hub_stat), bool(DC.CHANNEL_MSK_2 & msg.hub_stat),
+                              bool(DC.CHANNEL_MSK_3 & msg.hub_stat)]
+                    if hub_id + 1 == total_hubs:  # querying hub is end of chain, have all 4 ports available
+                        ch1to3.append(bool(DC.CHANNEL_MSK_4 & msg.hub_stat))
+                    return ch1to3
+    raise TimeoutError(f"no downstream hub responding within: {DC.END_CHAIN_TIMEOUT}ms")
+
+
 class HUBI2C(object):
     """
     USB HUB control
@@ -173,6 +196,7 @@ class UARTController(object):
         self.uart_us = UART(0, baudrate=baudrate, tx=Pin(tx_upstream), rx=Pin(rx_upstream))
         self.q_ds = deque((), HW.Q_LEN)
         self.uart_ds = UART(1, baudrate=baudrate, tx=Pin(tx_downstream), rx=Pin(rx_downstream))
+        self.q_msg = deque((), HW.Q_LEN)
         self.rx_flag = True
         self.q_lock = _thread.allocate_lock()
         _thread.start_new_thread(self.rx_thread, ())
@@ -252,7 +276,7 @@ class UARTController(object):
                     if hubs_data.cmd == DC.SCAN_RTN:
                         self.q_lock.release()
                         hub_chain_id = 0
-                        total_hubs = hubs_data.hub_no + 1
+                        total_hubs = hubs_data.hub_no
                         if _debug: print(f'DaisyChain: received return message. Total hubs are: {total_hubs}. This hub index: {hub_chain_id}')
                         return total_hubs  # return back with total number of hubs on chain (starting 0)
         total_hubs = -1
@@ -272,10 +296,10 @@ class UARTController(object):
         ack_back = DC.make_data(DC.SCAN, DC.DATA_DEF, DC.SCAN_ACK)
         self.send_upstream(ack_back)
         if not self._wait_ds_ack():  # end of chain found
-            dc_rtn_msg = DC.make_data(DC.SCAN_RTN, hub_chain_id, DC.DATA_DEF)
+            dc_rtn_msg = DC.make_data(DC.SCAN_RTN, hub_chain_id + 1, DC.DATA_DEF)  # total + 1 as id starts 0
             self.send_upstream(dc_rtn_msg)
             global total_hubs
-            total_hubs = hub_chain_id  # no of end chain hub is total hubs number
+            total_hubs = hub_chain_id + 1  # no of end chain hub is total hubs number
             if _debug: print(f'DaisyChain: this hub is end of chain, this hub id: {hub_chain_id}, sending back: {dc_rtn_msg}')
     
     def msg_return_chain(self, dcmsg: DCMSG) -> None:
@@ -297,11 +321,31 @@ class UARTController(object):
             return
         msg = DCMSG(data, data[1], data[2], data[3], data[4])
         if msg.cmd == DC.SCAN:
-            if _debug: print(f'DaisyChain: scan downstream message received: {msg}')
+            if _debug: print(f'DaisyChain: SCAN: scan downstream message received: {msg}')
             self.msg_relay_broadcast(msg)
         elif msg.cmd == DC.SCAN_RTN:
-            if _debug: print(f'DaisyChain: returning upstream message received :{msg}')
+            if _debug: print(f'DaisyChain: SCAN_RTN: returning upstream message received: {msg}')
             self.msg_return_chain(msg)
+        elif msg.cmd == DC.GET_HUB:
+            if _debug: print(f"DaisyChain: GET_HUB: request received: {msg}")
+            if msg.hub_no == hub_chain_id:
+                try:
+                    if hub_chain_id + 1 == total_hubs:
+                        stat = get_hub()
+                    else:  # excluding the channel used for daisy chain next hub
+                        stat = [x for i, x in enumerate(get_hub()) if i != DC.DC_CH]
+                    self.send_upstream(DC.make_data(DC.GET_HUB_RTN, hub_chain_id, int("".join(str(int(i)) for i in reversed(stat)), 2)))
+                except OSError:
+                    if _debug: print("DaisyChain: GET_HUB: calling get_hub error. Possibly hub not activated yet")
+                    self.send_upstream(DC.make_data(DC.GET_HUB_RTN, hub_chain_id, DC.ERROR))
+            else:
+                if _debug: print(f"DaisyChain: GET_HUB: {msg} not in scope of current chain, relaying msg to next hub")
+                self.send_downstream(msg.raw)
+        elif msg.cmd == DC.GET_HUB_RTN and hub_chain_id > 0:
+            if _debug: print(f"DaisyChain: GET_HUB_RTN: {msg}")
+            self.send_upstream(msg.raw)
+        else:  # all the rest dump into msg queue
+            self.q_msg.append(msg)
 
     def rx_thread(self):
         while self.rx_flag:
