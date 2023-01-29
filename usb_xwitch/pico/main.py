@@ -71,6 +71,15 @@ def get_switch() -> int:
     return switch_ctrl[1]  # return any value from switch list
 
 
+def discovery_chain() -> int:
+    """
+    using current hub as daisy chain root hub, discovery downstream daisy chain hubs
+
+    return total hubs available on the chain (include current hub)
+    """
+    return _uart.dc_broadcast()
+
+
 def set_hub(on_off_lst: list) -> None:
     """
     set usb hub channels using a list of bool values.
@@ -88,6 +97,11 @@ def set_hub(on_off_lst: list) -> None:
 def set_hub_chain(*args) -> None:
     """
     set hub channel on off in chain giving its id. id as kwargs name and bool list as argument.
+    syntax:
+        - None to escape hub stat and remain current channel setting.
+        - args represents hub index in order
+        - each args accpet a bool list that contains on off status of its channel. 3 values accpeted except for
+            the last channek which has 4 values (no next hub using one channel for daisy chain)
     e.g.:
         >>> set_hub_chain(None, [1,0,0])  # set 2nd hub (hub id 1) channel 1 on, 2 & 3 off, first hub unchanged (None). 
         Where channel 4 used for connecting next chain hub.
@@ -120,6 +134,15 @@ def set_hub_chain(*args) -> None:
             if is_rtn_received:
                 continue
             raise ValueError(f"trying to set hub: {i} in chain with no ack response")
+
+
+def set_hubs(on_off: bool) -> None:
+    """
+    set all hubs on chain to all on or all off state
+    """
+    bool_lst = [[on_off] * (len(DC.CHANNEL_MSKS) - 1) for i in range(total_hubs - 1)]
+    bool_lst.append([on_off] * len(DC.CHANNEL_MSKS))
+    set_hub_chain(*bool_lst)
 
 
 def get_hub() -> tuple:
