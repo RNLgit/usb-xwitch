@@ -98,20 +98,27 @@ def set_hub_chain(*args) -> None:
         raise IndexError(f"trying to set hub outside range. total hubs: {total_hubs}")
     for i in reversed(range(len(args))):  # from furtherest chain avoid been cycled by upstream
         if args[i]:
+            if i == 0:  # daisy chain root hub
+                args[i].insert(DC.DC_CH, True)  # channel to chain next hub should always set on
+                set_hub(args[i])
+                continue
+            is_rtn_received = False
             if _debug: print(f"DaisyChain: SET_HUB: args: {args}, i: {i}")
             if len(args[i]) > len(DC.CHANNEL_MSKS) - 1 and i + 1 < total_hubs:
                 raise IndexError(f"Too many channels to set hub: {i}. (mid-chain hubs need one channel for next hub)")
             _uart.send_downstream(DC.make_data(DC.SET_HUB, i,
                                                sum([ch for ch_on, ch in zip(args[i], DC.CHANNEL_MSKS) if ch_on])))
             start_ms = time.ticks_ms()
-            while time.ticks_ms() - start_ms < DC.END_CHAIN_TIMEOUT:
+            while time.ticks_ms() - start_ms < DC.BROADCAST_TIMEOUT:  # may take longer than 1s to reset ic
                 if len(_uart.q_msg) > 0:
                     msg = _uart.q_msg.popleft()
-                    if _debug: print(f"DaisyChain: SET_HUB: msg queue: {msg}")
                     if hasattr(msg, "cmd"):
                         if msg.cmd == DC.SET_HUB_RTN and int(msg.hub_no) == int(i) and msg.hub_stat == DC.ACK:
-                            if _debug: print(f"cmd:{msg.cmd}, no:{msg.hub_no}, st:{msg.hub_stat}")
-                            continue
+                            if _debug: print(f"DaisyChain: SET_HUB_RTN message: {msg}")
+                            is_rtn_received = True
+                            break
+            if is_rtn_received:
+                continue
             raise ValueError(f"trying to set hub: {i} in chain with no ack response")
 
 
