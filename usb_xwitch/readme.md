@@ -2,15 +2,17 @@
 
 pico controller and communication package
 
-- pico: code flash to pico
+- pico: code flash to board
 - commsrepl: controlling command via pico onboard usb with repl communication over py
 - commsrpi: communication via UART header (J8) to raspberry pi
 
 ## Flash pico controller
 
-use rshell to flash ./pico/main.py to pico board
-1. ```pip install rshell```
-2. ```rshell -p port_name```
+Flash pico uses python ```rshell``` to copy files into internal memory
+
+use rshell to flash ./pico files to the board
+1. ```pip install rshell``` (need to be in Python environment)
+2. ```rshell -p port_name``` (or simply ```rshell``` if this is the only board connected)
     
    e.g.:
    
@@ -18,22 +20,54 @@ use rshell to flash ./pico/main.py to pico board
 
    Linux / macOS: ```rshell -p /dev/tty.usbmodem11201```
 
-3. ```cp main.py /pyboard```
-4. reboot pico
+3. Copy firmware files:
+    - ```cp main.py /pyboard/main.py```
+    - ```cp conf.py /pyboard/conf.py```
+5. power cycle pico
 
    ### validation
    1. connect to pico 
       
       Windows: putty -> Serial --> COM port and connect
       
-      macOS: ```minicon -D /dev/tty.usbmodem11201```
+      macOS: ```minicom -D /dev/tty.usbmodem1234546```
    
-   2. flip on off of pico onboard led. Visual check.
+   2. flip on off of pico onboard led. Visual check on board.
       ```console
-      >>> flip_pico_led()
+      >>> flip_indicator_led()
       ```
    
-## Command xwitch
+## Communications
 
-1. install python package  
-   ```pip install -e ./usb_xwitch/comms-repl```
+1. Direct commanding over serial 
+    - macOS
+      - install ```minicom``` (```brew install minicom```)
+      - get divece name by: ```ls /dev/tty*```
+      - connect device by: ```minicom -D /dev/tty.usbmodel123456```
+      - enjoy!
+    - Windows
+      - install PuTTY
+      - open PuTTY, go to serial, enter board port COMx appear in device manager
+      - enjoy!
+2. As a python package (under construction)
+    - install python package 
+    ```pip install -e ./usb_xwitch/comms-repl```
+    - Working in progress...
+
+## Commands
+
+Commands available via ``` print(__doc__)``` when communication established
+
+```set_hub(list)```: set hub 4 channels on/off. format: ```[bool, bool, bool, bool]```
+
+```get_hub()```: get current hub 4 channels in tuple
+
+```set_switch(int)```: set switch to channel 1 / 2. starting from 0
+
+```get_switch()```: get current switch channel
+
+```get_adc(int)```: get current switch bus 1 / 2 volrage reading
+
+```flip_indicator_led()```: flip indicator led to opposite state
+
+```ind_led(bool)```: bool. set indicator led status
